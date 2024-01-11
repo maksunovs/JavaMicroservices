@@ -15,5 +15,6 @@ public class Resource implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private byte[] audioBytes;
+    private String sourcePath;
 
 }

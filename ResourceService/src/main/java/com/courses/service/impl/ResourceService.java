@@ -67,6 +67,11 @@ public class ResourceService implements IResourceService {
         resourceRepository.deleteById(id);
     }
 
+    @Override
+    public void uploadResourceToRemoteStorage(InputStream is) {
+
+    }
+
     public Resource createResource() {
         return new Resource();
     }
