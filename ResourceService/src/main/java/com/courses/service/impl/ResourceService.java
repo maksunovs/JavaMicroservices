@@ -49,18 +49,6 @@ public class ResourceService implements IResourceService {
         resource.setSourcePath(filePath);
         resource = resourceRepository.save(resource);
         songService.mapToSongJson(resource);
-        try {
-            Response songServiceResponse = songService.callSaveSongMetadata(songService.mapToSongJson(resource));
-            try (ResponseBody body = songServiceResponse.body()) {
-                if (HttpStatus.CREATED.value() != songServiceResponse.code()) {
-                    resourceRepository.deleteById(resource.getId());
-                    throw new SongServiceException(new ErrorResponse(HttpStatus.valueOf(songServiceResponse.code()), "Song service failure: " + body.string()));
-                }
-            }
-        } catch (IOException e) {
-            resourceRepository.deleteById(resource.getId());
-            throw new RuntimeException(e);
-        }
         return resource;
     }
 
