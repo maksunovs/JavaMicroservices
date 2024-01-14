@@ -1,6 +1,7 @@
 package com.courses.controller;
 
 import com.courses.dto.ResourceDto;
+import com.courses.dto.ResourceResponse;
 import com.courses.entity.Resource;
 import com.courses.mapper.impl.ResourceMapper;
 import com.courses.service.IResourceService;
@@ -36,22 +37,21 @@ public class ResourceController {
     private ObjectMapper objectMapper;
 
     @GetMapping("/{id}")
-    public ResourceDto getById(@PathVariable("id") @Min(0L) @Max(Long.MAX_VALUE) Long id) {
-        return resourceMapper.entityToDto(resourceService.findById(id));
+    public ResourceResponse getById(@PathVariable("id") @Min(0L) @Max(Long.MAX_VALUE) Long id) {
+        return resourceMapper.entityToResponse(resourceService.findById(id));
     }
 
-    @PostMapping(consumes="audio/mpeg")
+    @PostMapping(consumes = "audio/mpeg")
     @ResponseStatus(HttpStatus.CREATED)
     public ObjectNode saveAudioResource(HttpServletRequest httpRequest) {
         Resource resource = resourceService.createResource();
         Long id;
-        try (InputStream is = httpRequest.getInputStream()) {
-            byte[] bytes = is.readAllBytes();
-            resource.setAudioBytes(bytes);
-            resource = resourceService.saveResource(resource);
+        try {
+            resource.setAudioBytes(resourceService.streamToBytes(httpRequest.getInputStream()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        resource = resourceService.saveResource(resource);
         ObjectNode node = objectMapper.createObjectNode();
         node.put("id", resource.getId());
         return node;

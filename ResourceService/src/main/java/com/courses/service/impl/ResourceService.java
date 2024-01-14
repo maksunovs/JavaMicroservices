@@ -72,6 +72,17 @@ public class ResourceService implements IResourceService {
 
     }
 
+    @Override
+    public byte[] streamToBytes(InputStream is) {
+        byte[] dataBytes;
+        try (is) {
+           dataBytes = is.readAllBytes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return dataBytes;
+    }
+
     public Resource createResource() {
         return new Resource();
     }

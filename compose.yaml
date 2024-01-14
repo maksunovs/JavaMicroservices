@@ -47,7 +47,7 @@ services:
     build: ./SongService
     deploy:
       mode: replicated
-      replicas: 6
+      replicas: 2
     env_file:
       - songs_service.env
     depends_on:
