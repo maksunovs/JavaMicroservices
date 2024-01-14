@@ -16,11 +16,13 @@ import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ResourceService implements IResourceService {
@@ -42,13 +44,17 @@ public class ResourceService implements IResourceService {
     }
 
     @Override
+    @Transactional
     public Resource saveResource(Resource resource) {
         validate(resource);
-
         String filePath = s3StorageService.uploadFile(resource.getInputStream());
         resource.setSourcePath(filePath);
-        resource = resourceRepository.save(resource);
-        songService.mapToSongJson(resource);
+        try {
+            resource = resourceRepository.save(resource);
+        } catch (Exception e) {
+            s3StorageService.removeFile(filePath);
+            throw e;
+        }
         return resource;
     }
 
@@ -59,19 +65,16 @@ public class ResourceService implements IResourceService {
 
     @Override
     public void deleteById(Long id) {
+        Optional<Resource> resource = resourceRepository.findById(id);
         resourceRepository.deleteById(id);
-    }
-
-    @Override
-    public void uploadResourceToRemoteStorage(InputStream is) {
-
+        resource.ifPresent(value -> s3StorageService.removeFile(value.getSourcePath()));
     }
 
     @Override
     public byte[] streamToBytes(InputStream is) {
         byte[] dataBytes;
         try (is) {
-           dataBytes = is.readAllBytes();
+            dataBytes = is.readAllBytes();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

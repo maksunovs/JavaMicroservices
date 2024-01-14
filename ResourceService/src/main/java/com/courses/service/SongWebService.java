@@ -32,7 +32,6 @@ public class SongWebService {
                     .put("year", metadata.get("xmpDM:releaseDate"))
                     .put("length", convertSecondsToTime(Double.parseDouble(metadata.get("xmpDM:duration"))))
                     .toString();
-            System.out.println(jsonString);
             return jsonString;
         } catch (IOException e) {
             throw new RuntimeException(e);

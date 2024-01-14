@@ -12,6 +12,5 @@ public interface IResourceService {
     public Resource findById(Long id);
     public void deleteById(Long id);
     public Resource createResource();
-    public void uploadResourceToRemoteStorage(InputStream is);
     public byte[] streamToBytes(InputStream is);
 }
