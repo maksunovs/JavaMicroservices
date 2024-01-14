@@ -8,6 +8,7 @@ import com.courses.exception.error.ErrorResponse;
 import com.courses.parser.AudioFileParser;
 import com.courses.repository.IResourceRepository;
 import com.courses.service.IResourceService;
+import com.courses.service.S3StorageService;
 import com.courses.service.SongWebService;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
@@ -32,6 +33,9 @@ public class ResourceService implements IResourceService {
     @Autowired
     private SongWebService songService;
 
+    @Autowired
+    private S3StorageService s3StorageService;
+
     @Override
     public List<Resource> findAll() {
         return (List<Resource>) resourceRepository.findAll();
@@ -40,6 +44,9 @@ public class ResourceService implements IResourceService {
     @Override
     public Resource saveResource(Resource resource) {
         validate(resource);
+
+        String filePath = s3StorageService.uploadFile(resource.getInputStream());
+        resource.setSourcePath(filePath);
         resource = resourceRepository.save(resource);
         songService.mapToSongJson(resource);
         try {

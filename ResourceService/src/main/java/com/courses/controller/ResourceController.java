@@ -47,7 +47,9 @@ public class ResourceController {
         Resource resource = resourceService.createResource();
         Long id;
         try {
-            resource.setAudioBytes(resourceService.streamToBytes(httpRequest.getInputStream()));
+            InputStream is = httpRequest.getInputStream();
+            resource.setAudioBytes(resourceService.streamToBytes(is));
+            resource.setInputStream(is);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
