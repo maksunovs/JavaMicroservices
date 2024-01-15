@@ -49,7 +49,6 @@ public class ResourceController {
         try {
             InputStream is = httpRequest.getInputStream();
             resource.setAudioBytes(resourceService.streamToBytes(is));
-            resource.setInputStream(is);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

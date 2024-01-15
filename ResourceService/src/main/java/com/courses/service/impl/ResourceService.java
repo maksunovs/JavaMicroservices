@@ -47,7 +47,7 @@ public class ResourceService implements IResourceService {
     @Transactional
     public Resource saveResource(Resource resource) {
         validate(resource);
-        String filePath = s3StorageService.uploadFile(resource.getInputStream());
+        String filePath = s3StorageService.uploadFile(resource.getAudioBytes());
         resource.setSourcePath(filePath);
         try {
             resource = resourceRepository.save(resource);

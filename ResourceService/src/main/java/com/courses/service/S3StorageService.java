@@ -7,6 +7,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
@@ -18,11 +19,11 @@ public class S3StorageService {
     @Value("${s3.storage.url}")
     private String S3_STORAGE_URL;
 
-    @Value("${S3_BUCKET_NAME}")
+    @Value("${s3.storage.bucket}")
     private String bucketName;
-    @Value("${S3_USER}")
+    @Value("${s3.storage.credentials.user}")
     private String s3User;
-    @Value("${S3_PASSWORD}")
+    @Value("${s3.storage.credentials.password}")
     private String s3password;
     private MinioClient minioClient;
 
@@ -38,19 +39,21 @@ public class S3StorageService {
 
     }
 
-    public String uploadFile(InputStream file) {
-        try {
+    public String uploadFile(byte[] file) {
+        String path = RandomStringUtils.randomAlphanumeric(8);
+        try(InputStream is = new ByteArrayInputStream(file)) {
+            System.out.println(file.length);
             minioClient.putObject(PutObjectArgs
                     .builder()
                     .bucket(bucketName)
-                    .object(RandomStringUtils.randomAlphanumeric(8))
-                    .stream(file, -1, 10485760)
+                    .object(path)
+                    .stream(is, file.length, -1)
                     .contentType("audio/mp3")
                     .build());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return "Resume.mp3";
+        return path;
     }
 
     public void removeFile(String path) {
