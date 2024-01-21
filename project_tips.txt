@@ -1,0 +1,30 @@
+docker run --name posrtgre-resources -p 5432:5432 -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=resources_db -e PGDATA=/var/lib/postgresql/data/pgdata -d -v "C://Users/Aliaksandr_Maksunou/Documents/JavaCourses/RESOURCES_DB":/var/lib/postgresql/data postgres
+
+docker run --name posrtgre-songs -p 5433:5432 -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -e POSTGRES_DB=songs_db -e PGDATA=/var/lib/postgresql/data/pgdata -d -v "C://Users/Aliaksandr_Maksunou/Documents/JavaCourses/SONGS_DB":/var/lib/postgresql/data postgres
+
+-- public.resources_table definition
+
+-- Drop table
+
+-- DROP TABLE public.resources_table;
+
+CREATE TABLE IF NOT EXISTS public.resources (
+	id serial4 NOT NULL,
+	audio_bytes bytea NOT NULL,
+	CONSTRAINT resources_table_pkey PRIMARY KEY (id)
+);
+
+
+docker network create -d bridge my-net
+
+ docker run -d -p 8181:8181 --name resource-service resource-service-image         
+ 
+  docker exec -it resource-service ls     
+  
+   docker logs --since=1h 858f33ddcd31c2a30e6469db507f3eab66e0dd202201556d6481e2a60f7af327
+   
+    ./gradlew bootRun --args='--spring.profiles.active=dev'   
+	
+	docker-compose down -v --rmi all --remove-orphans
+	
+	docker-compose up -d --no-deps --build resource-service
