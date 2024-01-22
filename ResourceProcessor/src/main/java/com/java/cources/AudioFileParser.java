@@ -1,4 +1,4 @@
-package com.java.cources.parser;
+package com.java.cources;
 
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
