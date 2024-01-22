@@ -1,4 +1,4 @@
-package com.courses.java.service;
+package com.java.cources.service;
 
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;

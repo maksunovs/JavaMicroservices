@@ -56,6 +56,23 @@ public class S3StorageService {
         return path;
     }
 
+    public InputStream readFile(String bucket, String path) {
+        InputStream stream = null;
+        try {
+            if (minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build())) {
+                stream = minioClient.getObject(
+                        GetObjectArgs.builder()
+                                .bucket(bucket)
+                                .object(path)
+                                .build());
+            }
+            // Read data from stream
+        } catch (Exception e) {
+            throw new RuntimeException("Error happened during the file reading: ",e);
+        }
+        return stream;
+    }
+
     public void removeFile(String path) {
         try {
             minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(path).build());

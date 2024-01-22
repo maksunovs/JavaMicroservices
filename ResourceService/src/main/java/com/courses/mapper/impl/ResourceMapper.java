@@ -8,6 +8,8 @@ import com.courses.service.impl.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Base64;
+
 @Component
 public class ResourceMapper implements IResourceMapper {
     @Autowired
@@ -16,16 +18,15 @@ public class ResourceMapper implements IResourceMapper {
     public Resource dtoToEntity(ResourceDto songDto) {
         Resource resource = resourceService.createResource();
         resource.setId(songDto.getId());
-        resource.setAudioBytes(songDto.getAudioBytes());
+        resource.setAudioBytes(Base64.getDecoder().decode(songDto.getAudioBytes()));
         return resource;
     }
 
     @Override
-    @Deprecated
     public ResourceDto entityToDto(Resource song) {
         ResourceDto resourceDto = new ResourceDto();
         resourceDto.setId(song.getId());
-        resourceDto.setAudioBytes(song.getAudioBytes());
+        resourceDto.setAudioBytes(new String(Base64.getEncoder().encode(song.getAudioBytes())));
         return resourceDto;
     }
 

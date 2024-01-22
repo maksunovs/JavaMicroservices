@@ -37,8 +37,8 @@ public class ResourceController {
     private ObjectMapper objectMapper;
 
     @GetMapping("/{id}")
-    public ResourceResponse getById(@PathVariable("id") @Min(0L) @Max(Long.MAX_VALUE) Long id) {
-        return resourceMapper.entityToResponse(resourceService.findById(id));
+    public ResourceDto getById(@PathVariable("id") @Min(0L) @Max(Long.MAX_VALUE) Long id) {
+        return resourceMapper.entityToDto(resourceService.findById(id));
     }
 
     @PostMapping(consumes = "audio/mpeg")

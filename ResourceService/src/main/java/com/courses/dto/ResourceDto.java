@@ -6,5 +6,5 @@ import lombok.Data;
 public class ResourceDto {
     private Long Id;
     @NotEmpty
-    private byte[] audioBytes;
+    private String audioBytes;
 }

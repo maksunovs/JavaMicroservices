@@ -14,7 +14,9 @@ import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,9 @@ import java.util.Optional;
 @Service
 public class ResourceService implements IResourceService {
     private static final String AUDIO_CONTENT_TYPE = "audio/mpeg";
+
+    @Value("${s3.storage.bucket}")
+    private String bucketName;
     @Autowired
     private IResourceRepository resourceRepository;
     @Autowired
@@ -37,6 +42,9 @@ public class ResourceService implements IResourceService {
 
     @Autowired
     private S3StorageService s3StorageService;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
     public List<Resource> findAll() {
@@ -51,6 +59,7 @@ public class ResourceService implements IResourceService {
         resource.setSourcePath(filePath);
         try {
             resource = resourceRepository.save(resource);
+            kafkaTemplate.send("new-resources", resource.getId().toString());
         } catch (Exception e) {
             s3StorageService.removeFile(filePath);
             throw e;
@@ -60,7 +69,13 @@ public class ResourceService implements IResourceService {
 
     @Override
     public Resource findById(Long id) {
-        return resourceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(new ErrorResponse(HttpStatus.NOT_FOUND, "Resource with ID " + id + " was not found")));
+        Resource resource = resourceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(new ErrorResponse(HttpStatus.NOT_FOUND, "Resource with ID " + id + " was not found")));
+        try(InputStream is = s3StorageService.readFile(bucketName, resource.getSourcePath())) {
+            resource.setAudioBytes(is.readAllBytes());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return resource;
     }
 
     @Override
