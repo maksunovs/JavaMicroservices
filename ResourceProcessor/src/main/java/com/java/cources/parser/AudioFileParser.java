@@ -32,15 +32,13 @@ public class AudioFileParser {
         }
     }
 
-    public String mapToSongJson(Metadata metadata) {
-            String jsonString = new JSONObject()
-                    .put("name", metadata.get("dc:title"))
-                    .put("album", metadata.get("xmpDM:album"))
-                    .put("artist", metadata.get("xmpDM:artist"))
-                    .put("year", metadata.get("xmpDM:releaseDate"))
-                    .put("length", convertSecondsToTime(Double.parseDouble(metadata.get("xmpDM:duration"))))
-                    .toString();
-            return jsonString;
+    public JSONObject mapToSongJson(Metadata metadata) {
+        return new JSONObject()
+                .put("name", metadata.get("dc:title"))
+                .put("album", metadata.get("xmpDM:album"))
+                .put("artist", metadata.get("xmpDM:artist"))
+                .put("year", metadata.get("xmpDM:releaseDate"))
+                .put("length", convertSecondsToTime(Double.parseDouble(metadata.get("xmpDM:duration"))));
     }
 
     private String convertSecondsToTime(double sec) {

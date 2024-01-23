@@ -47,7 +47,8 @@ public class ResourcesKafkaListener {
                     String base64bytes = jsonObject.getString("audioBytes");
                     byte[] audioBytes = Base64.getDecoder().decode(base64bytes);
                     try (InputStream is = new ByteArrayInputStream(audioBytes)) {
-                        songsResponse = songWebService.callSaveSongMetadata(parser.mapToSongJson(parser.parseMetadata(is)));
+                        songsResponse = songWebService.callSaveSongMetadata(parser.mapToSongJson(parser.parseMetadata(is))
+                                .put("resourceId", value).toString());
                         try (ResponseBody songsResponseBody = songsResponse.body()) {
                             if (HttpURLConnection.HTTP_OK != songsResponse.code()) {
                                 throw new RuntimeException("Song service error: " + songsResponseBody.string());
@@ -55,7 +56,7 @@ public class ResourcesKafkaListener {
                         }
                     }
                 } else {
-                    System.out.println(resourcesResponse.code()+": "+resourcesResponseBody.string());
+                    System.out.println(resourcesResponse.code() + ": " + resourcesResponseBody.string());
                 }
             }
 
