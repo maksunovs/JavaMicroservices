@@ -29,7 +29,7 @@ public class SongService implements ISongService {
     }
 
     public Song saveSong(Song song) {
-        validateSong(song);
+//        validateSong(song);
         return songRepository.save(song);
     }
 

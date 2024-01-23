@@ -50,7 +50,8 @@ public class ResourcesKafkaListener {
                         songsResponse = songWebService.callSaveSongMetadata(parser.mapToSongJson(parser.parseMetadata(is))
                                 .put("resourceId", value).toString());
                         try (ResponseBody songsResponseBody = songsResponse.body()) {
-                            if (HttpURLConnection.HTTP_OK != songsResponse.code()) {
+                            if (HttpURLConnection.HTTP_CREATED != songsResponse.code()
+                                    && HttpURLConnection.HTTP_OK != songsResponse.code()) {
                                 throw new RuntimeException("Song service error: " + songsResponseBody.string());
                             }
                         }
