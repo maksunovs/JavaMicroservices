@@ -1,4 +1,4 @@
-package com.java.cources;
+package com.java.cources.reader;
 
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;

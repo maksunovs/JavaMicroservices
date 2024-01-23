@@ -12,7 +12,5 @@ COPY settings.gradle ./
 
 COPY src ./src
 
-expose 8686
-
 CMD ["./gradlew", "bootRun"]
 

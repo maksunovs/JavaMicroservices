@@ -39,19 +39,26 @@ public class ResourcesKafkaListener {
         System.out.println("Resource id received: " + value);
         try {
 
-            Response response = resourceWebService.callGetResourceById(Long.parseLong(value));
-            try (ResponseBody body = response.body()) {
-                if (HttpURLConnection.HTTP_OK != response.code()) {
-//                    throw new RuntimeException(String.format(response.code()), body.string()));
-                    JSONObject jsonObject = new JSONObject(body.string());
+            Response resourcesResponse = resourceWebService.callGetResourceById(Long.parseLong(value));
+            Response songsResponse;
+            try (ResponseBody resourcesResponseBody = resourcesResponse.body()) {
+                if (HttpURLConnection.HTTP_OK == resourcesResponse.code()) {
+                    JSONObject jsonObject = new JSONObject(resourcesResponseBody.string());
                     String base64bytes = jsonObject.getString("audioBytes");
-                    byte[] audioBytes  = Base64.getDecoder().decode(base64bytes);
-                    try(InputStream is = new ByteArrayInputStream(audioBytes)){
-                        System.out.println(parser.mapToSongJson(parser.parseMetadata(is)));
+                    byte[] audioBytes = Base64.getDecoder().decode(base64bytes);
+                    try (InputStream is = new ByteArrayInputStream(audioBytes)) {
+                        songsResponse = songWebService.callSaveSongMetadata(parser.mapToSongJson(parser.parseMetadata(is)));
+                        try (ResponseBody songsResponseBody = songsResponse.body()) {
+                            if (HttpURLConnection.HTTP_OK != songsResponse.code()) {
+                                throw new RuntimeException("Song service error: " + songsResponseBody.string());
+                            }
+                        }
                     }
-                    throw new RuntimeException("Request error: " + body.string());
+                } else {
+                    System.out.println(resourcesResponse.code()+": "+resourcesResponseBody.string());
                 }
             }
+
         } catch (NumberFormatException e) {
             throw new RuntimeException("Request resource is invalid: " + value);
         } catch (IOException e) {
