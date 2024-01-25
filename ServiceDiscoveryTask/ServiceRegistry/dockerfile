@@ -14,6 +14,6 @@ COPY ServiceRegistry ./ServiceRegistry
 
 EXPOSE 8083
 
-CMD ["./gradlew", ":serviceRegistry:bootRun"]
+ENTRYPOINT ["./gradlew", ":serviceRegistry:bootRun"]
 
 

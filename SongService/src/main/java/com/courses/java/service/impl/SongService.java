@@ -52,17 +52,20 @@ public class SongService implements ISongService {
     public void validateSong(Song song) {
         Long resourceId = song.getResourceId();
         if (resourceId != null) {
-            try {
-                Response response = resourceWebService.callGetResourceById(resourceId);
-                try (ResponseBody body = response.body()) {
-                    if (HttpStatus.OK.value() != response.code()) {
-                        throw new EntityNotFoundException(new ErrorResponse(HttpStatus.valueOf(response.code()), body.string()));
-                    } else if (song.getId() == null && !findByResourceId(song.getResourceId()).isEmpty()) {
-                        throw new EntityNotFoundException(new ErrorResponse(HttpStatus.BAD_REQUEST, "Provided resource ID is already in use."));
-                    }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+//            try {
+//                Response response = resourceWebService.callGetResourceById(resourceId);
+//                try (ResponseBody body = response.body()) {
+//                    if (HttpStatus.OK.value() != response.code()) {
+//                        throw new EntityNotFoundException(new ErrorResponse(HttpStatus.valueOf(response.code()), body.string()));
+//                    } else if (song.getId() == null && !findByResourceId(song.getResourceId()).isEmpty()) {
+//                        throw new EntityNotFoundException(new ErrorResponse(HttpStatus.BAD_REQUEST, "Provided resource ID is already in use."));
+//                    }
+//                }
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+            if (song.getId() == null && !findByResourceId(song.getResourceId()).isEmpty()) {
+                throw new EntityNotFoundException(new ErrorResponse(HttpStatus.BAD_REQUEST, "Provided resource ID is already in use."));
             }
         } else {
             throw new IllegalArgumentException("Resource ID cannot be null");
