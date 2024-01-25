@@ -15,6 +15,7 @@ FROM eclipse-temurin:17-jre-alpine
 COPY --from=build-app /app/build/libs/ResourceService.jar /ResourceService.jar
 
 EXPOSE 8181
+EXPOSE 8000
 
-CMD ["java", "-jar","/ResourceService.jar"]
+CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000","-jar","/ResourceService.jar"]
 

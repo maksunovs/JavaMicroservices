@@ -39,6 +39,7 @@ services:
     build: ./ResourceService
     ports:
       - '8181:8181'
+      - '8000:8000'
     env_file:
       - resources_service.env
     depends_on:

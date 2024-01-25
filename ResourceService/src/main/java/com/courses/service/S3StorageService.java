@@ -1,10 +1,13 @@
 package com.courses.service;
 
+import com.courses.handler.RestResponseEntityExceptionHandler;
 import io.minio.*;
 import io.minio.errors.*;
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -14,6 +17,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 @Component
+@Retryable
 public class S3StorageService {
 
     @Value("${s3.storage.url}")
@@ -26,7 +30,7 @@ public class S3StorageService {
     @Value("${s3.storage.credentials.password}")
     private String s3password;
     private MinioClient minioClient;
-
+    private static final Logger LOGGER = Logger.getLogger(S3StorageService.class);
     @PostConstruct
     void init() {
         minioClient =
@@ -39,10 +43,11 @@ public class S3StorageService {
 
     }
 
+
     public String uploadFile(byte[] file) {
+        LOGGER.info("Uploading file to S3 storage...");
         String path = RandomStringUtils.randomAlphanumeric(8);
         try(InputStream is = new ByteArrayInputStream(file)) {
-            System.out.println(file.length);
             minioClient.putObject(PutObjectArgs
                     .builder()
                     .bucket(bucketName)
@@ -57,6 +62,7 @@ public class S3StorageService {
     }
 
     public InputStream readFile(String bucket, String path) {
+        LOGGER.info("Reading file from S3 storage...");
         InputStream stream = null;
         try {
             if (minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build())) {
@@ -73,7 +79,9 @@ public class S3StorageService {
         return stream;
     }
 
+
     public void removeFile(String path) {
+        LOGGER.info("Removing file from S3 storage...");
         try {
             minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(path).build());
         } catch (Exception e) {

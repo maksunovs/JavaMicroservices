@@ -1,57 +1,56 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.0'
-	id 'io.spring.dependency-management' version '1.1.4'
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 
 ext {
-	group = 'com.courses'
-	set('springCloudVersion', "2023.0.0")
-	name = 'Eureka Client'
-	description = 'Eureka Client demo project'
-	version='0.0.1-SNAPSHOT'
-	sourceEncoding='UTF-8'
+    group = 'com.courses'
+    set('springCloudVersion', "2023.0.0")
+    name = 'Eureka Client'
+    description = 'Eureka Client demo project'
+    version = '0.0.1-SNAPSHOT'
+    sourceEncoding = 'UTF-8'
 }
 
 java {
-	sourceCompatibility = '17'
+    sourceCompatibility = '17'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 dependencies {
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation group: 'io.minio', name: 'minio', version: '8.5.7'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.2.0'
-	implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.0'
-	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '3.2.0'
-	implementation group: 'com.squareup.okhttp', name: 'okhttp', version: '2.7.5'
-	implementation 'org.apache.tika:tika-core:2.9.0'
-	implementation 'org.apache.tika:tika-parsers-standard-package:2.9.0'
-	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
-	implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.0'
-// https://mvnrepository.com/artifact/log4j/log4j
-	implementation 'log4j:log4j:1.2.17'
-	implementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '3.1.1'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation group: 'io.minio', name: 'minio', version: '8.5.7'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '3.2.0'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.7.0'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '3.2.0'
+    implementation group: 'com.squareup.okhttp', name: 'okhttp', version: '2.7.5'
+    implementation 'org.apache.tika:tika-core:2.9.0'
+    implementation 'org.apache.tika:tika-parsers-standard-package:2.9.0'
+    implementation 'org.springframework.boot:spring-boot-starter-validation:3.2.0'
+    implementation group: 'org.springframework.retry', name: 'spring-retry', version: '2.0.5'
+    implementation 'log4j:log4j:1.2.17'
+    implementation group: 'org.springframework.kafka', name: 'spring-kafka', version: '3.1.1'
 
-	compileOnly 'org.projectlombok:lombok:1.18.30'
-	annotationProcessor 'org.projectlombok:lombok:1.18.30'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testCompileOnly 'org.projectlombok:lombok:1.18.30'
-	testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
-	implementation group: 'org.json', name: 'json', version: '20231013'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+    implementation group: 'org.json', name: 'json', version: '20231013'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

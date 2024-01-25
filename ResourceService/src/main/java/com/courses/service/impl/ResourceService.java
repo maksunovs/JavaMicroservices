@@ -12,11 +12,13 @@ import com.courses.service.S3StorageService;
 import com.courses.service.SongWebService;
 import com.squareup.okhttp.Response;
 import com.squareup.okhttp.ResponseBody;
+import org.apache.log4j.Logger;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +31,7 @@ import java.util.Optional;
 @Service
 public class ResourceService implements IResourceService {
     private static final String AUDIO_CONTENT_TYPE = "audio/mpeg";
-
+    private static final Logger LOGGER = Logger.getLogger(ResourceService.class);
     @Value("${s3.storage.bucket}")
     private String bucketName;
     @Autowired
@@ -46,31 +48,42 @@ public class ResourceService implements IResourceService {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
+    @Autowired
+    private RetryTemplate retryTemplate;
+
     @Override
     public List<Resource> findAll() {
         return (List<Resource>) resourceRepository.findAll();
     }
 
     @Override
-    @Transactional
-    public Resource saveResource(Resource resource) {
+    public Resource saveResource(final Resource resource) {
+        Resource savedResource;
         validate(resource);
         String filePath = s3StorageService.uploadFile(resource.getAudioBytes());
         resource.setSourcePath(filePath);
         try {
-            resource = resourceRepository.save(resource);
-            kafkaTemplate.send("new-resources", resource.getId().toString());
+            savedResource = retryTemplate.execute(context -> {
+                LOGGER.info("Saving resource to DB...");
+                return resourceRepository.save(resource);
+
+            });
+            retryTemplate.execute(context -> {
+                LOGGER.info("Sending message to Kafka...");
+                kafkaTemplate.send("new-resources", resource.getId().toString());
+                return null;
+            });
         } catch (Exception e) {
             s3StorageService.removeFile(filePath);
             throw e;
         }
-        return resource;
+        return savedResource;
     }
 
     @Override
     public Resource findById(Long id) {
         Resource resource = resourceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(new ErrorResponse(HttpStatus.NOT_FOUND, "Resource with ID " + id + " was not found")));
-        try(InputStream is = s3StorageService.readFile(bucketName, resource.getSourcePath())) {
+        try (InputStream is = s3StorageService.readFile(bucketName, resource.getSourcePath())) {
             resource.setAudioBytes(is.readAllBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
