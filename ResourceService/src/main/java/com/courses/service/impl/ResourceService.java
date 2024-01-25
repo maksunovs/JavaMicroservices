@@ -82,6 +82,7 @@ public class ResourceService implements IResourceService {
 
     @Override
     public Resource findById(Long id) {
+        LOGGER.info("Searching resource by ID...");
         Resource resource = resourceRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(new ErrorResponse(HttpStatus.NOT_FOUND, "Resource with ID " + id + " was not found")));
         try (InputStream is = s3StorageService.readFile(bucketName, resource.getSourcePath())) {
             resource.setAudioBytes(is.readAllBytes());
