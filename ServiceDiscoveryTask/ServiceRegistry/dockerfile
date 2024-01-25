@@ -1,19 +1,21 @@
 # syntax=docker/dockerfile:1
 
-FROM eclipse-temurin:17-jdk-alpine
+FROM gradle:8.5-jdk17-alpine as build-app
 
 WORKDIR /app
 
-COPY gradle ./gradle
 COPY build.gradle ./
-COPY gradlew ./
-COPY gradlew.bat ./
 COPY settings.gradle ./
+COPY src ./src
 
-COPY ServiceRegistry ./ServiceRegistry
+RUN gradle build --no-daemon
 
-EXPOSE 8083
+FROM eclipse-temurin:17-jre-alpine
 
-ENTRYPOINT ["./gradlew", ":serviceRegistry:bootRun"]
+COPY --from=build-app /app/build/libs/ServiceRegistry.jar /ServiceRegistry.jar
+
+EXPOSE 8181
+
+CMD ["java", "-jar","/ServiceRegistry.jar"]
 
 
