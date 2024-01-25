@@ -29,7 +29,7 @@ public class SongService implements ISongService {
     }
 
     public Song saveSong(Song song) {
-//        validateSong(song);
+        validateSong(song);
         return songRepository.save(song);
     }
 
@@ -52,18 +52,6 @@ public class SongService implements ISongService {
     public void validateSong(Song song) {
         Long resourceId = song.getResourceId();
         if (resourceId != null) {
-//            try {
-//                Response response = resourceWebService.callGetResourceById(resourceId);
-//                try (ResponseBody body = response.body()) {
-//                    if (HttpStatus.OK.value() != response.code()) {
-//                        throw new EntityNotFoundException(new ErrorResponse(HttpStatus.valueOf(response.code()), body.string()));
-//                    } else if (song.getId() == null && !findByResourceId(song.getResourceId()).isEmpty()) {
-//                        throw new EntityNotFoundException(new ErrorResponse(HttpStatus.BAD_REQUEST, "Provided resource ID is already in use."));
-//                    }
-//                }
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
             if (song.getId() == null && !findByResourceId(song.getResourceId()).isEmpty()) {
                 throw new EntityNotFoundException(new ErrorResponse(HttpStatus.BAD_REQUEST, "Provided resource ID is already in use."));
             }
