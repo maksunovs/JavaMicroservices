@@ -6,13 +6,13 @@ WORKDIR /app
 
 COPY build.gradle ./
 COPY settings.gradle ./
-COPY src ./src
+COPY ApiGateway ./ApiGateway
 
-RUN gradle build --no-daemon
+RUN gradle :apiGateway:build --no-daemon
 
 FROM eclipse-temurin:17-jre-alpine
 
-COPY --from=build-app /app/build/libs/ApiGateway.jar /ApiGateway.jar
+COPY --from=build-app /app/ApiGateway/build/libs/ApiGateway.jar /ApiGateway.jar
 
 EXPOSE 8181
 
