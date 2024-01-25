@@ -1,19 +1,21 @@
 # syntax=docker/dockerfile:1
 
-FROM eclipse-temurin:17-jdk-alpine
+FROM gradle:8.5-jdk17-alpine as build-app
 
 WORKDIR /app
 
-COPY gradle ./gradle
 COPY build.gradle ./
-COPY gradlew ./
-COPY gradlew.bat ./
 COPY settings.gradle ./
+COPY src ./src
 
-COPY ApiGateway ./ApiGateway
+RUN gradle build --no-daemon
 
-EXPOSE 8080
+FROM eclipse-temurin:17-jre-alpine
 
-CMD ["./gradlew", ":apiGateway:bootRun"]
+COPY --from=build-app /app/build/libs/ApiGateway.jar /ApiGateway.jar
+
+EXPOSE 8181
+
+CMD ["java", "-jar","/ApiGateway.jar"]
 
 
