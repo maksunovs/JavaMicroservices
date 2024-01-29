@@ -3,15 +3,10 @@ package com.courses.service.impl;
 import com.courses.entity.Resource;
 import com.courses.exception.EntityNotFoundException;
 import com.courses.exception.NotAudioFileException;
-import com.courses.exception.SongServiceException;
 import com.courses.exception.error.ErrorResponse;
-import com.courses.parser.AudioFileParser;
 import com.courses.repository.IResourceRepository;
 import com.courses.service.IResourceService;
 import com.courses.service.S3StorageService;
-import com.courses.service.SongWebService;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
 import org.apache.log4j.Logger;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,11 +30,6 @@ public class ResourceService implements IResourceService {
     private String bucketName;
     @Autowired
     private IResourceRepository resourceRepository;
-    @Autowired
-    private AudioFileParser parser;
-
-    @Autowired
-    private SongWebService songService;
 
     @Autowired
     private S3StorageService s3StorageService;
@@ -115,6 +104,9 @@ public class ResourceService implements IResourceService {
     }
 
     public void validate(Resource resource) {
+        if (resource == null || resource.getAudioBytes() == null) {
+            throw new RuntimeException("Resource is null.");
+        }
         try (InputStream is = new ByteArrayInputStream(resource.getAudioBytes())) {
             Tika tika = new Tika();
             String providedDataType = tika.detect(is);

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.util.Base64;
+import java.util.Map;
 
 @Component
 @KafkaListener(id = "1", topics = "new-resources")
@@ -35,20 +36,26 @@ public class ResourcesKafkaListener {
     private SongWebService songWebService;
 
     @KafkaHandler
-    public void handleString(String value) {
-        System.out.println("Resource id received: " + value);
+    public void handleString(String resourceId) {
+        System.out.println("Resource id received: " + resourceId);
         try {
 
-            Response resourcesResponse = resourceWebService.callGetResourceById(Long.parseLong(value));
+            // Retrieve resource with file
+            Response resourcesResponse = resourceWebService.callGetResourceById(Long.parseLong(resourceId));
             Response songsResponse;
             try (ResponseBody resourcesResponseBody = resourcesResponse.body()) {
                 if (HttpURLConnection.HTTP_OK == resourcesResponse.code()) {
                     JSONObject jsonObject = new JSONObject(resourcesResponseBody.string());
                     String base64bytes = jsonObject.getString("audioBytes");
                     byte[] audioBytes = Base64.getDecoder().decode(base64bytes);
+                    // read audio bytes
                     try (InputStream is = new ByteArrayInputStream(audioBytes)) {
-                        songsResponse = songWebService.callSaveSongMetadata(parser.mapToSongJson(parser.parseMetadata(is))
-                                .put("resourceId", value).toString());
+                        // parse audio metadata
+                        Map<String, String> songPropertiesMap = (parser.parseMetadata(is));
+                        // put resource id to map
+                        songPropertiesMap.put("resourceId", resourceId);
+                        // call web service to save song
+                        songsResponse = songWebService.callSaveSongMetadata(songPropertiesMap);
                         try (ResponseBody songsResponseBody = songsResponse.body()) {
                             if (HttpURLConnection.HTTP_CREATED != songsResponse.code()
                                     && HttpURLConnection.HTTP_OK != songsResponse.code()) {
@@ -62,7 +69,7 @@ public class ResourcesKafkaListener {
             }
 
         } catch (NumberFormatException e) {
-            throw new RuntimeException("Request resource is invalid: " + value);
+            throw new RuntimeException("Request resource is invalid: " + resourceId);
         } catch (IOException e) {
             throw new RuntimeException("Request to resource service failed: ", e);
         }

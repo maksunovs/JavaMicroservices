@@ -16,7 +16,7 @@ public class ResourceMapper implements IResourceMapper {
     private ResourceService resourceService;
     @Override
     public Resource dtoToEntity(ResourceDto songDto) {
-        Resource resource = resourceService.createResource();
+        Resource resource = new Resource();
         resource.setId(songDto.getId());
         resource.setAudioBytes(Base64.getDecoder().decode(songDto.getAudioBytes()));
         return resource;

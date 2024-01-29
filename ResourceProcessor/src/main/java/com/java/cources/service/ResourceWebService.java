@@ -21,7 +21,6 @@ public class ResourceWebService {
         Request request = new Request.Builder()
                 .url(String.format(API_GATEWAY_URL + "/resources/%d", id))
                 .get()
-//                .addHeader("Connection","close")
                 .build();
 
 
