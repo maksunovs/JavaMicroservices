@@ -34,7 +34,7 @@ class ResourceServiceTest {
     }
 
     @Test
-    void validateEmptyResource() {
+    void testValidateEmptyResource() {
         Exception exception = assertThrows(RuntimeException.class, () -> resourceService.validate(new Resource()));
 
         String expectedMessage = "Resource is null.";
