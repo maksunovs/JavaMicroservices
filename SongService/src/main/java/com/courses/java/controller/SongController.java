@@ -58,6 +58,13 @@ public class SongController {
         return songMapper.entityToDto(song);
     }
 
+    @PostMapping("/all")
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<SongDto> saveSongs(@Valid @RequestBody List<SongDto> songDtoList) {
+        List<Song> song = songDtoList.stream().map(s->songMapper.dtoToEntity(s)).map(s->songService.saveSong(s)).toList();
+        return song.stream().map(s->songMapper.entityToDto(s)).toList();
+    }
+
     @DeleteMapping
     public ObjectNode delete(@RequestParam("ids")
                              @Length(max = 200, message = "Parameter length mustn't be more then 200 characters")

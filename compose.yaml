@@ -2,6 +2,7 @@ version: '3.8'
 volumes:
   resources_data: null
   songs_data: null
+  storages_data: null
 services:
   resources_db:
     image: 'postgres:13.3-alpine'
@@ -19,6 +20,14 @@ services:
       - 'songs_data:/var/lib/postgresql/data/pgdata'
     ports:
       - '5433:5432'
+  storages_db:
+    image: 'postgres:13.3-alpine'
+    env_file:
+      - storage_db.env
+    volumes:
+      - 'storages_data:/var/lib/postgresql/data/pgdata'
+    ports:
+      - '5434:5432'
   service-registry:
     build:
       context: ./ServiceDiscoveryTask

@@ -1,0 +1,69 @@
+# =============================================
+# SERVER SETTINGS
+# =============================================
+server:
+  port: 8999
+
+spring:
+  application:
+    name: storage-service
+  # =============================================
+  # DATASOURCE PROPERTIES
+  # =============================================
+  datasource:
+    url: jdbc:postgresql://localhost:5434/storages_db
+    username: user
+    password: password
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath*:sql/schema.sql
+  # =============================================
+  # KAFKA SETTINGS
+  # =============================================
+  kafka:
+    bootstrap-servers: :29093
+# =============================================
+# HIBERNATE PROPERTIES
+# =============================================
+jpa:
+  show-sql: false
+  hibernate:
+    ddl-auto: validate
+    naming:
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+  properties:
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+
+# =============================================
+# SONG SERVICE
+# =============================================
+#song.service.url=${SONG_SERVICE_URL}
+
+# =============================================
+# API GATEWAY
+# =============================================
+api:
+  gateway:
+    url: http://localhost:8080
+
+# =============================================
+# S3 STORAGE
+# =============================================
+s3:
+  storage:
+    url: http://localhost:9000
+    bucket: test-bucket
+    credentials:
+      user: minio_user
+      password: minio_password
+
+# =============================================
+# SERVICE REGISTRY
+# =============================================
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8083/eureka
+
