@@ -62,6 +62,12 @@ services:
       - songs_service.env
     depends_on:
       - songs_db
+  storages-service:
+    build: ./StorageService
+    env_file:
+      - storages_service.env
+    depends_on:
+      - storages_db
   minio-service:
      image: 'quay.io/minio/minio'
      volumes: 

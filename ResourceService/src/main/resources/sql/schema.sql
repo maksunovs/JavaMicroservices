@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS public.resource (
 	id serial8 NOT NULL,
 	source_path varchar NOT NULL,
+	storage varchar NOT NULL,
 	CONSTRAINT resource_pkey PRIMARY KEY (id)
 );
 

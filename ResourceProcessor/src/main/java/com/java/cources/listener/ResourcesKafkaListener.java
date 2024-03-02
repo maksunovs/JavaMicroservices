@@ -13,6 +13,7 @@ import org.netpreserve.jwarc.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
@@ -26,12 +27,14 @@ import java.util.Map;
 @KafkaListener(id = "1", topics = "new-resources")
 public class ResourcesKafkaListener {
 
+    private static final String PROCESSED_TOPIC = "processed-resource";
     @Autowired
     private AudioFileParser parser;
 
     @Autowired
     private ResourceWebService resourceWebService;
-
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
     @Autowired
     private SongWebService songWebService;
 
@@ -61,6 +64,7 @@ public class ResourcesKafkaListener {
                                     && HttpURLConnection.HTTP_OK != songsResponse.code()) {
                                 throw new RuntimeException("Song service error: " + songsResponseBody.string());
                             }
+                            kafkaTemplate.send(PROCESSED_TOPIC, resourceId);
                         }
                     }
                 } else {

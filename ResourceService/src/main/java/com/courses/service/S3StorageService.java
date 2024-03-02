@@ -31,6 +31,7 @@ public class S3StorageService {
     private String s3password;
     private MinioClient minioClient;
     private static final Logger LOGGER = Logger.getLogger(S3StorageService.class);
+
     @PostConstruct
     void init() {
         minioClient =
@@ -44,21 +45,21 @@ public class S3StorageService {
     }
 
 
-    public String uploadFile(byte[] file) {
+    public String uploadFile(byte[] file, String bucket, String path) {
         LOGGER.info("Uploading file to S3 storage...");
-        String path = RandomStringUtils.randomAlphanumeric(8);
-        try(InputStream is = new ByteArrayInputStream(file)) {
+        String fileName = path + "/" + RandomStringUtils.randomAlphanumeric(8);
+        try (InputStream is = new ByteArrayInputStream(file)) {
             minioClient.putObject(PutObjectArgs
                     .builder()
-                    .bucket(bucketName)
-                    .object(path)
+                    .bucket(bucket)
+                    .object(fileName)
                     .stream(is, file.length, -1)
                     .contentType("audio/mp3")
                     .build());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return path;
+        return fileName;
     }
 
     public InputStream readFile(String bucket, String path) {
@@ -74,13 +75,13 @@ public class S3StorageService {
             }
             // Read data from stream
         } catch (Exception e) {
-            throw new RuntimeException("Error happened during the file reading: ",e);
+            throw new RuntimeException("Error happened during the file reading: ", e);
         }
         return stream;
     }
 
 
-    public void removeFile(String path) {
+    public void removeFile(String bucket, String path) {
         LOGGER.info("Removing file from S3 storage...");
         try {
             minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(path).build());

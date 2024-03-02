@@ -1,5 +1,6 @@
 package com.courses.mapper.impl;
 
+import com.courses.client.dto.StorageType;
 import com.courses.dto.ResourceDto;
 import com.courses.dto.ResourceResponse;
 import com.courses.entity.Resource;
@@ -22,9 +23,11 @@ class ResourceMapperTest {
         ResourceDto dto = new ResourceDto();
         dto.setId(1L);
         dto.setAudioBytes(ENCODED_STRING_BASE64);
+        dto.setStorage(StorageType.PERMANENT.name());
         Resource newResource = mapper.dtoToEntity(dto);
         assertArrayEquals(audioBytes, newResource.getAudioBytes());
         assertEquals(1L, newResource.getId());
+        assertEquals(StorageType.PERMANENT, newResource.getStorage());
     }
 
     @Test
@@ -32,9 +35,11 @@ class ResourceMapperTest {
         Resource entity = new Resource();
         entity.setId(1L);
         entity.setAudioBytes(audioBytes);
+        entity.setStorage(StorageType.PERMANENT);
         ResourceDto dto = mapper.entityToDto(entity);
         assertEquals(1L, dto.getId());
         assertEquals(ENCODED_STRING_BASE64, dto.getAudioBytes());
+        assertEquals(StorageType.PERMANENT.name(), dto.getStorage());
     }
 
 }

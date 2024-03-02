@@ -1,6 +1,7 @@
 package com.cources.java.controller;
 
 import com.cources.java.controller.dto.StorageDto;
+import com.cources.java.controller.dto.StorageListDto;
 import com.cources.java.mapper.StorageMapper;
 import com.cources.java.service.StorageService;
 import jakarta.validation.Valid;
@@ -28,8 +29,8 @@ public class StorageController {
     private StorageMapper mapper;
 
     @GetMapping
-    public List<StorageDto> findAll() {
-        return service.findAll().stream().map(s->mapper.toDto(s)).toList();
+    public StorageListDto findAll() {
+        return new StorageListDto(service.findAll().stream().map(s->mapper.toDto(s)).toList());
     }
 
     @GetMapping("/{id}")

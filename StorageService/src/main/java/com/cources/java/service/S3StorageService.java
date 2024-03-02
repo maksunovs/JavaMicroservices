@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 @Retryable
 public class S3StorageService {
 
-    private static final String PERMANENT_BUCKET="permanent-bucket";
-    private static final String STAGING_BUCKET="staging-bucket";
+    private static final String PERMANENT_BUCKET = "permanent-bucket";
+    private static final String STAGING_BUCKET = "staging-bucket";
 
     @Value("${s3.storage.url}")
     private String S3_STORAGE_URL;
@@ -29,6 +29,7 @@ public class S3StorageService {
     @Autowired
     private StorageService service;
     private static final Logger LOGGER = Logger.getLogger(S3StorageService.class);
+
     @PostConstruct
     void init() {
         minioClient =

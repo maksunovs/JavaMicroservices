@@ -2,18 +2,18 @@
 # SERVER SETTINGS
 # =============================================
 server:
-  port: 8999
+  port: ${SERVER_PORT}
 
 spring:
   application:
     name: storage-service
-  # =============================================
-  # DATASOURCE PROPERTIES
-  # =============================================
+ # =============================================
+ # DATASOURCE PROPERTIES
+ # =============================================
   datasource:
-    url: jdbc:postgresql://localhost:5434/storages_db
-    username: user
-    password: password
+    url: ${STORAGES_DB_URL}
+    username: ${STORAGES_DB_USR}
+    password: ${STORAGES_DB_PWD}
   sql:
     init:
       mode: always
@@ -22,7 +22,9 @@ spring:
   # KAFKA SETTINGS
   # =============================================
   kafka:
-    bootstrap-servers: :29093
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+
+
 # =============================================
 # HIBERNATE PROPERTIES
 # =============================================
@@ -46,18 +48,18 @@ jpa:
 # =============================================
 api:
   gateway:
-    url: http://localhost:8080
+    rl: ${API_GATEWAY_URL}
 
 # =============================================
 # S3 STORAGE
 # =============================================
 s3:
   storage:
-    url: http://localhost:9000
-    bucket: test-bucket
+    rl: ${S3_STORAGE_URL}
+    bucket: ${S3_BUCKET_NAME}
     credentials:
-      user: minio_user
-      password: minio_password
+      user: ${S3_USER}
+      password: ${S3_PASSWORD}
 
 # =============================================
 # SERVICE REGISTRY
@@ -65,5 +67,5 @@ s3:
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8083/eureka
+      defaultZone: ${SERVICE_REGISTRY_URL}
 

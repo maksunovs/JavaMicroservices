@@ -7,4 +7,5 @@ public class ResourceDto {
     private Long Id;
     @NotEmpty
     private String audioBytes;
+    private String storage;
 }

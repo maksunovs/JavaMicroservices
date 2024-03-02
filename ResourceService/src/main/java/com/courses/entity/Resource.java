@@ -1,5 +1,6 @@
 package com.courses.entity;
 
+import com.courses.client.dto.StorageType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,5 +16,7 @@ public class Resource implements Serializable {
     private String sourcePath;
     @Transient
     private byte[] audioBytes;
+    @Enumerated(EnumType.STRING)
+    private StorageType storage;
 
 }

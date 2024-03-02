@@ -1,5 +1,6 @@
 package com.courses.controller;
 
+import com.courses.client.dto.StorageType;
 import com.courses.dto.ResourceDto;
 import com.courses.dto.ResourceResponse;
 import com.courses.entity.Resource;
@@ -52,6 +53,7 @@ public class ResourceController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        resource.setStorage(StorageType.STAGING);
         resource = resourceService.saveResource(resource);
         ObjectNode node = objectMapper.createObjectNode();
         node.put("id", resource.getId());

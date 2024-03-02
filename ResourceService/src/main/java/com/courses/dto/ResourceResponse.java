@@ -8,4 +8,5 @@ public class ResourceResponse {
     private Long Id;
     @NotEmpty
     private String sourcePath;
+    private String storage;
 }

@@ -2,7 +2,6 @@ package com.java.cources.service;
 
 import com.java.cources.parser.AudioFileParser;
 import com.squareup.okhttp.*;
-import org.apache.tika.metadata.Metadata;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
