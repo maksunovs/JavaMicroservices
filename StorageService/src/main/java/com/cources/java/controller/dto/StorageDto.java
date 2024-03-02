@@ -14,5 +14,7 @@ public class StorageDto {
     @NotEmpty
     private String storageType;
     @NotEmpty
+    private String bucket;
+    @NotEmpty
     private String path;
 }

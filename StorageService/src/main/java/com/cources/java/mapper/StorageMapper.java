@@ -7,11 +7,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class StorageMapper {
-    public StorageDto toDto(Storage storage){
-        return new StorageDto(storage.getId(), storage.getStorageType().name(), storage.getPath());
+    public StorageDto toDto(Storage storage) {
+        return new StorageDto(storage.getId(), storage.getStorageType().name(), storage.getBucket(), storage.getPath());
     }
 
-    public Storage toEntity(StorageDto storageDto){
-        return new Storage(storageDto.getId(), StorageType.valueOf(storageDto.getStorageType()), storageDto.getPath());
+    public Storage toEntity(StorageDto storageDto) {
+        return new Storage(storageDto.getId(), StorageType.valueOf(storageDto.getStorageType()), storageDto.getBucket(), storageDto.getPath());
     }
 }

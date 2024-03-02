@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS public.storage (
 	id serial8 NOT NULL,
 	storage_type varchar NOT NULL,
+	bucket varchar NOT NULL,
 	path varchar NOT NULL,
 	CONSTRAINT storage_pkey PRIMARY KEY (id)
 );
