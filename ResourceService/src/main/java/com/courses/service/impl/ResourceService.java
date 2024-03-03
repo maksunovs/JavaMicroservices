@@ -11,6 +11,7 @@ import com.courses.exception.error.ErrorResponse;
 import com.courses.repository.IResourceRepository;
 import com.courses.service.IResourceService;
 import com.courses.service.S3StorageService;
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +64,7 @@ public class ResourceService implements IResourceService {
         StorageListDto storageListDto = storageServiceClient.getStorages();
         StorageDto stageStorage = storageListDto.getStorages()
                 .stream().filter(s -> s.getStorageType().equalsIgnoreCase(StorageType.STAGING.name())).toList().get(0);
-        String filePath = s3StorageService.uploadFile(resource.getAudioBytes(), stageStorage.getBucket(), stageStorage.getPath());
+        String filePath = s3StorageService.uploadFile(resource.getAudioBytes(), stageStorage.getBucket(), stageStorage.getPath()+ RandomStringUtils.randomAlphanumeric(8));
         resource.setSourcePath(filePath);
         try {
             savedResource = retryTemplate.execute(context -> {
@@ -76,7 +77,7 @@ public class ResourceService implements IResourceService {
                 return null;
             });
         } catch (Exception e) {
-            s3StorageService.removeFile(filePath, StorageType.STAGING.name());
+            s3StorageService.removeFile(STAGING_BUCKET,filePath);
             throw e;
         }
         return savedResource;
@@ -100,8 +101,7 @@ public class ResourceService implements IResourceService {
     public void deleteById(Long id) {
         Optional<Resource> resource = resourceRepository.findById(id);
         resourceRepository.deleteById(id);
-        resource.ifPresent(value -> s3StorageService.removeFile(value.getSourcePath(),
-                StorageType.PERMANENT == value.getStorage() ? PERMANENT_BUCKET : STAGING_BUCKET));
+        resource.ifPresent(value -> s3StorageService.removeFile(StorageType.PERMANENT == value.getStorage() ? PERMANENT_BUCKET : STAGING_BUCKET, value.getSourcePath()));
     }
 
     @Override

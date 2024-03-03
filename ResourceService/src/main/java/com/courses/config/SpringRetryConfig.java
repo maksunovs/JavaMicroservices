@@ -12,7 +12,6 @@ import org.springframework.retry.support.RetryTemplate;
 public class SpringRetryConfig {
 
     @Bean
-
     public RetryTemplate retryTemplate() {
 
         SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();

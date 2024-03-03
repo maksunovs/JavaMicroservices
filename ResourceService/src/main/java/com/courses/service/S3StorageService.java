@@ -47,19 +47,37 @@ public class S3StorageService {
 
     public String uploadFile(byte[] file, String bucket, String path) {
         LOGGER.info("Uploading file to S3 storage...");
-        String fileName = path + "/" + RandomStringUtils.randomAlphanumeric(8);
         try (InputStream is = new ByteArrayInputStream(file)) {
             minioClient.putObject(PutObjectArgs
                     .builder()
                     .bucket(bucket)
-                    .object(fileName)
+                    .object(path)
                     .stream(is, file.length, -1)
                     .contentType("audio/mp3")
                     .build());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return fileName;
+        return path;
+    }
+
+    public String moveFile(String sourceBucket, String targetBucket, String from, String to) {
+        try {
+            minioClient.copyObject(
+                    CopyObjectArgs.builder()
+                            .bucket(targetBucket)
+                            .object(to)
+                            .source(
+                                    CopySource.builder()
+                                            .bucket(sourceBucket)
+                                            .object(from)
+                                            .build())
+                            .build());
+            removeFile(sourceBucket, from);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return to;
     }
 
     public InputStream readFile(String bucket, String path) {
@@ -84,7 +102,7 @@ public class S3StorageService {
     public void removeFile(String bucket, String path) {
         LOGGER.info("Removing file from S3 storage...");
         try {
-            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(path).build());
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucket).object(path).build());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
