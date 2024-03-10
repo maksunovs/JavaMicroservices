@@ -3,6 +3,10 @@ volumes:
   resources_data: null
   songs_data: null
   storages_data: null
+  prometheus_data: null
+  ls_data: null
+  es_data: null
+  kb_data: null
 services:
   resources_db:
     image: 'postgres:13.3-alpine'
@@ -122,3 +126,62 @@ services:
     depends_on:
       - kafka-service
       - zookeeper-service
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - "./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+      - "prometheus_data:/prometheus"
+    ports:
+      - "9090:9090"
+  grafana:
+    build: './monitoring/grafana'
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+  elasticsearch:
+    image: elasticsearch:7.9.1
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data/
+      - ./monitoring/elk-config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    environment:
+      - discovery.type=single-node
+      - http.host=0.0.0.0
+      - transport.host=0.0.0.0
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - cluster.name=elasticsearch
+      - bootstrap.memory_lock=true
+  logstash:
+    image: logstash:7.9.1
+    container_name: logstash
+    ports:
+      - "7000:7000"
+      - "9600:9600"
+    volumes:
+      - ./monitoring/elk-config/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./monitoring/elk-config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ls_data:/usr/share/logstash/data
+    depends_on:
+      - elasticsearch
+  kibana:
+    image: kibana:7.9.1
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./monitoring/elk-config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - kb_data:/usr/share/kibana/data
+    depends_on:
+      - elasticsearch
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"

@@ -32,4 +32,10 @@ docker network create -d bridge my-net
 docker compose up zookeeper-service kafka-service kafka-ui-service
 
 
-docker run -it image_name sh - look inside dokcer image
+docker run -it image_name sh - look inside docker image
+
+Monitoring:
+- collect metrics: Prometheus, micrometer, New Relic, Zipkin
+- Display metrics in UI: Grafana, Kibana, Datadog, Dynatrace
+- Data storage: elasticsearch
+- Logs aggregation: ELK Stack

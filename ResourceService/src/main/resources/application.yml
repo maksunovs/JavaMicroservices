@@ -66,3 +66,28 @@ resilience4j:
           - org.springframework.web.client.HttpClientErrorException
         ignoreExceptions:
 
+# =============================================
+# MONITORING
+# =============================================
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+logstash:
+  host: logstash
+  port: 7000
+  queue-size: 512
