@@ -185,3 +185,7 @@ services:
     image: openzipkin/zipkin
     ports:
       - "9411:9411"
+  auth-server:
+    build: ./AuthServer
+    ports:
+      - "9999:9999"

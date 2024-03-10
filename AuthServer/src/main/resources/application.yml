@@ -5,9 +5,9 @@ spring:
   security:
     oauth2:
       authorizationserver:
-        issuer: http://auth-server:9000
+        issuer: http://auth-server:9999
       client:
-        articles-client:
+        storages-client:
           registration:
             client-id: storages-service
             client-secret: "{noop}secret"
@@ -22,4 +22,4 @@ spring:
               - http://127.0.0.1:8080/authorized
             scopes:
               - openid
-              - articles.read
+              - storages.read
