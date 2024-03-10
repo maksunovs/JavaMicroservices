@@ -1,0 +1,47 @@
+# =============================================
+# SERVER SETTINGS
+# =============================================
+server:
+  port: 8585
+
+spring:
+  # =============================================
+  # DATASOURCE PROPERTIES
+  # =============================================
+  datasource:
+    url: jdbc:postgresql://localhost:5432/resources_db
+    username: user
+    password: password
+  # =============================================
+  # KAFKA SETTINGS
+  # =============================================
+  kafka:
+    bootstrap-servers: :29093
+
+
+# =============================================
+# API GATEWAY
+# =============================================
+api:
+  gateway:
+    url: http://localhost:8080
+
+# =============================================
+# S3 STORAGE
+# =============================================
+s3:
+  storage:
+    url: http://localhost:9000
+    bucket: test-bucket
+    credentials:
+      user: minio_user
+      password: minio_password
+
+# =============================================
+# SERVICE REGISTRY
+# =============================================
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8083/eureka
+

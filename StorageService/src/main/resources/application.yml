@@ -1,3 +1,38 @@
 spring:
   profiles:
     active: ${SPRING_PROFILE}
+  application:
+    name: storage-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://auth-server:9999
+  # =============================================
+  # DATASOURCE PROPERTIES
+  # =============================================
+  datasource:
+    url: ${STORAGES_DB_URL}
+    username: ${STORAGES_DB_USR}
+    password: ${STORAGES_DB_PWD}
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath*:sql/schema.sql
+  # =============================================
+  # KAFKA SETTINGS
+  # =============================================
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+  # =============================================
+  # HIBERNATE PROPERTIES
+  # =============================================
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+      naming:
+        naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

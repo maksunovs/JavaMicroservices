@@ -11,6 +11,7 @@ import com.courses.exception.error.ErrorResponse;
 import com.courses.repository.IResourceRepository;
 import com.courses.service.IResourceService;
 import com.courses.service.S3StorageService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tika.Tika;
@@ -20,12 +21,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -58,6 +57,7 @@ public class ResourceService implements IResourceService {
     }
 
     @Override
+    @CircuitBreaker(name = "saveResource", fallbackMethod = "fallbackForSaveResource")
     public Resource saveResource(final Resource resource) {
         Resource savedResource;
         validate(resource);
@@ -133,6 +133,11 @@ public class ResourceService implements IResourceService {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public Resource fallbackForSaveResource(Resource resource, Exception e){
+        System.out.println("fallbackForSaveResource() method was called...");
+        return resource;
     }
 }
 
