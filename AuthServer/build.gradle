@@ -17,9 +17,12 @@ repositories {
 
 
 dependencies {
-    implementation 'org.springframework.cloud:spring-cloud-starter-security:2.2.5.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-security:3.2.3'
+
     implementation 'org.springframework.boot:spring-boot-starter-web:3.2.3'
-    implementation 'org.springframework.cloud:spring-cloud-starter-oauth2:2.2.5.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server:3.2.3'
+
+
     implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.2.3'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
