@@ -4,14 +4,9 @@
 server:
   port: ${SERVER_PORT}
 
-security:
-  oauth2:
-    resource:
-      user-info-uri: http://auth-server:9999/api/auth/user
-
 spring:
   profiles:
-    active: local
+    active: ${SPRING_PROFILE}
   application:
     name: storage-service
 
@@ -43,3 +38,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://auth-server:9999

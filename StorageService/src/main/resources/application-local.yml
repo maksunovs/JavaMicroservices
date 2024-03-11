@@ -17,7 +17,11 @@ spring:
   # =============================================
   kafka:
     bootstrap-servers: :29093
-
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9999
 
 # =============================================
 # API GATEWAY
@@ -44,4 +48,6 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8083/eureka
+
+
 

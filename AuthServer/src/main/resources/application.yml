@@ -15,11 +15,7 @@ spring:
               client-authentication-methods:
                 - client_secret_basic
               authorization-grant-types:
-                - authorization_code
-                - refresh_token
-              redirect-uris:
-                - http://127.0.0.1:8080/login/oauth2/code/articles-client-oidc
-                - http://127.0.0.1:8080/authorized
-              scopes:
-                - openid
-                - storages.read
+                - client_credentials
+#              scopes:
+#                - openid
+#                - storages.read

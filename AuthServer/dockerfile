@@ -12,7 +12,7 @@ RUN gradle build --no-daemon
 
 FROM eclipse-temurin:17-jre-alpine
 
-COPY --from=build-app /app/build/libs/AuthServer.jar /AuthServer.jar
+COPY --from=build-app /app/build/libs/AuthServer-*.jar /AuthServer.jar
 
 EXPOSE 9999
 
