@@ -28,29 +28,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-  security:
-    oauth2:
-      client:
-        registration:
-          storages-client-oidc:
-            provider: spring
-            client-id: storages-client
-            client-secret: secret
-            authorization-grant-type: authorization_code
-            redirect-uri: "http://127.0.0.1:8585/login/oauth2/code/{registrationId}"
-            scope: openid
-            client-name: storages-client-oidc
-          storages-client-authorization-code:
-            provider: spring
-            client-id: storages-client
-            client-secret: secret
-            authorization-grant-type: authorization_code
-            redirect-uri: "http://127.0.0.1:8585/authorized"
-            scope: storages.read
-            client-name: storages-client-authorization-code
-        provider:
-          spring:
-            issuer-uri: http://auth-server:9999
 
 # =============================================
 # SERVER SETTINGS

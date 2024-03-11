@@ -1,6 +1,5 @@
 package com.cources.java.controller.dto;
 
-import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,17 +1,11 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.0'
+    id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
-ext {
-    group = 'com.courses'
-    set('springCloudVersion', "2023.0.0")
-    name = 'Eureka Client'
-    description = 'Eureka Client demo project'
-    version='0.0.1-SNAPSHOT'
-    sourceEncoding='UTF-8'
-}
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '17'
@@ -22,19 +16,15 @@ repositories {
 }
 
 
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-}
-
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security:3.2.3'
+    implementation 'org.springframework.cloud:spring-cloud-starter-security:2.2.5.RELEASE'
     implementation 'org.springframework.boot:spring-boot-starter-web:3.2.3'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server:3.2.3'
+    implementation 'org.springframework.cloud:spring-cloud-starter-oauth2:2.2.5.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.2.3'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-test{
+tasks.named('test') {
     useJUnitPlatform()
 }
