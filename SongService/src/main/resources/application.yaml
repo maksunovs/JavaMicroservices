@@ -1,0 +1,32 @@
+server:
+  port: ${SERVER_PORT}
+  
+api:
+  gateway:
+    url: ${API_GATEWAY_URL}
+    
+spring:
+  sql:
+    init:
+      schema-locations: classpath*:sql/schema.sql
+      mode: always
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: 'false'
+    hibernate:
+      ddl-auto: validate
+      naming:
+        naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+  application:
+    name: song-service
+  datasource:
+    password: ${SONGS_DB_PWD}
+    username: ${SONGS_DB_USR}
+    url: ${SONGS_DB_URL}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${SERVICE_REGISTRY_URL}

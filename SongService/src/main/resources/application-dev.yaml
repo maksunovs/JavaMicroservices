@@ -1,0 +1,21 @@
+server:
+  port: '8180'
+  
+spring:
+  datasource:
+    username: user
+    url: jdbc:postgresql://localhost:5433/songs_db
+    password: password
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      naming:
+        naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+      ddl-auto: validate
+    show-sql: 'false'
+
+resource:
+  service:
+    url: http://localhost:8181
