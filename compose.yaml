@@ -1,3 +1,5 @@
+version: "3.8"
+
 volumes:
   resources_data: null
   songs_data: null
@@ -44,11 +46,9 @@ services:
       - resources_db
   songs-service:
     build: ./SongService
-    ports:
-      - '8180:8180'
-#    deploy:
-#      mode: replicated
-#      replicas: 6
+    deploy:
+      mode: replicated
+      replicas: 6
     env_file:
       - env/songs_service.env
     depends_on:

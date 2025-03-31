@@ -1,6 +1,5 @@
 rootProject.name = 'java-microservices'
 include 'SongService'
 include 'ResourceService'
-//include 'ServiceDiscoveryTask'
 include 'ServiceDiscoveryTask:ApiGateway'
 include 'ServiceDiscoveryTask:ServiceRegistry'
