@@ -1,4 +1,3 @@
-version: '3.8'
 volumes:
   resources_data: null
   songs_data: null
@@ -6,7 +5,7 @@ services:
   resources_db:
     image: 'postgres:13.3-alpine'
     env_file:
-      - resource_db.env
+      - env/resource_db.env
     volumes:
       - 'resources_data:/var/lib/postgresql/data/pgdata'
     ports:
@@ -14,7 +13,7 @@ services:
   songs_db:
     image: 'postgres:13.3-alpine'
     env_file:
-      - song_db.env
+      - env/song_db.env
     volumes:
       - 'songs_data:/var/lib/postgresql/data/pgdata'
     ports:
@@ -22,33 +21,35 @@ services:
   service-registry:
     build:
       context: ./ServiceDiscoveryTask
-      dockerfile: ./ServiceRegistry/dockerfile
+      dockerfile: ./ServiceRegistry/Dockerfile
     ports:
       - '8083:8083'
     env_file:
-      - service_registry.env
+      - env/service_registry.env
   api-gateway:
     build:
       context: ./ServiceDiscoveryTask
-      dockerfile: ./ApiGateway/dockerfile
+      dockerfile: ./ApiGateway/Dockerfile
     ports:
       - '8080:8080'
     env_file:
-      - api_gateway.env
+      - env/api_gateway.env
   resources-service:
     build: ./ResourceService
     ports:
       - '8181:8181'
     env_file:
-      - resources_service.env
+      - env/resources_service.env
     depends_on:
       - resources_db
   songs-service:
     build: ./SongService
-    deploy:
-      mode: replicated
-      replicas: 6
+    ports:
+      - '8180:8180'
+#    deploy:
+#      mode: replicated
+#      replicas: 6
     env_file:
-      - songs_service.env
+      - env/songs_service.env
     depends_on:
       - songs_db
