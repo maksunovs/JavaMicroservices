@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY build/libs/ResourceService.jar ./ResourceService.jar
 
-EXPOSE 8181
+#EXPOSE 8181
 
 CMD ["java", "-jar", "/app/ResourceService.jar"]
 

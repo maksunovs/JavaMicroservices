@@ -42,8 +42,8 @@ services:
       - '8181:8181'
     env_file:
       - env/resources_service.env
-    depends_on:
-      - resources_db
+#    depends_on:
+#      - resources_db
   songs-service:
     build: ./SongService
     deploy:

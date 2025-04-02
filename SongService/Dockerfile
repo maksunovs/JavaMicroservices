@@ -4,6 +4,6 @@ WORKDIR /app
 
 COPY build/libs/SongService.jar ./SongService.jar
 
-EXPOSE 8180
+#EXPOSE 8180
 
 CMD ["java", "-jar", "/app/SongService.jar"]

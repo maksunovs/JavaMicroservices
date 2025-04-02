@@ -1,10 +1,10 @@
 server:
   port: ${SERVER_PORT}
-  
+
 api:
   gateway:
     url: ${API_GATEWAY_URL}
-    
+
 spring:
   sql:
     init:
@@ -28,5 +28,6 @@ spring:
 
 eureka:
   client:
+    enabled: ${EUREKA_CLIENT_ENABLED:false}
     serviceUrl:
       defaultZone: ${SERVICE_REGISTRY_URL}

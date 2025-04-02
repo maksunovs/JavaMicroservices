@@ -1,10 +1,10 @@
 server:
   port: ${SERVER_PORT}
-  
+
 api:
   gateway:
     url: ${API_GATEWAY_URL}
-    
+
 spring:
   sql:
     init:
@@ -25,8 +25,9 @@ spring:
     password: ${RESOURCES_DB_PWD}
     username: ${RESOURCES_DB_USR}
     url: ${RESOURCES_DB_URL}
-  
+
 eureka:
   client:
+    enabled: ${EUREKA_CLIENT_ENABLED:false}
     serviceUrl:
       defaultZone: ${SERVICE_REGISTRY_URL}
