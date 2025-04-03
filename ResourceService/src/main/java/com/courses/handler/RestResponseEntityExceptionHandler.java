@@ -62,7 +62,7 @@ public class RestResponseEntityExceptionHandler {
             Exception ex) {
         logError(ex);
         return new ResponseEntity<>(
-                new ErrorResponse(HttpStatus.BAD_REQUEST, "Content-Type is not supported. Acceptable content type: audio/mpeg"), HttpStatus.BAD_REQUEST);
+                new ErrorResponse(HttpStatus.BAD_REQUEST, "Content-Type is not supported. Acceptable content type: multipart/form-data"), HttpStatus.BAD_REQUEST);
     }
     private void logError(Throwable ex) {
         LOGGER.error("Error: ",ex);

@@ -28,3 +28,15 @@ or
 - delete namespace
 
 ``kubectl delete namespaces k8s-program``
+
+
+StatefulSets do not provide any guarantees on the termination of pods when a StatefulSet is deleted. To achieve ordered and graceful termination of the pods in the StatefulSet, it is possible to scale the StatefulSet down to 0 prior to deletion.
+
+
+kubectl config set-context --current --namespace=k8s-program   
+
+
+kubectl exec -n k8s-program --stdin --tty song-service-deployment-66654d64cf-9nbjl -- /bin/bash
+
+kubectl exec -i -t  song-service-deployment-test-74d9d986f9-9qnzv -- /bin/sh  
+

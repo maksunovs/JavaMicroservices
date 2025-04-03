@@ -8,7 +8,7 @@ spec:
     storage: 2Gi
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
+  persistentVolumeReclaimPolicy: Delete
   storageClassName: local-storage
   hostPath:
     path: "/mnt/d/Programming/projects/songs"
@@ -57,8 +57,6 @@ spec:
     matchLabels:
       app: song-db # has to match .spec.template.metadata.labels
   serviceName: "song-db"
-  #  replicas: 1 # by default is 1
-  #  minReadySeconds: 10 # by default is 0
   template:
     metadata:
       labels:

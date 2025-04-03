@@ -1,21 +1,32 @@
 apiVersion: v1
-kind: Service
+kind: PersistentVolume
 metadata:
   namespace: k8s-program
-  name: song-service
+  name: song-pv-test
 spec:
-  type: NodePort
-  selector:
-    app: song-service-pod
-  ports:
-    - port: 8180
-      # By default and for convenience, the `targetPort` is set to
-      # the same value as the `port` field.
-      targetPort: 8180
-      # Optional field
-      # By default and for convenience, the Kubernetes control plane
-      # will allocate a port from a range (default: 30000-32767)
-      nodePort: 30001
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: local-storage
+  hostPath:
+    path: "/mnt/d/Programming/projects/testVolume"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: k8s-program
+  name: song-claim-test
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 2Gi
 
 ---
 
@@ -23,21 +34,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: k8s-program
-  name: song-service-deployment
+  name: song-service-deployment-test
   labels:
-    app: song-service-app
+    app: song-service-app-test
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: song-service-pod
+      app: song-service-pod-test
   template:
     metadata:
       labels:
-        app: song-service-pod
+        app: song-service-pod-test
     spec:
       containers:
-        - name: song-service-pod
+        - name: song-service-pod-test
           image: song-service:latest
           env:
             - name: SERVER_PORT
@@ -55,4 +66,11 @@ spec:
           ports:
             - containerPort: 8180
           imagePullPolicy: IfNotPresent
-              
+          volumeMounts:
+            - name: www-persistent-storage
+              mountPath: /home
+      volumes:
+        - name: www-persistent-storage
+          persistentVolumeClaim:
+            claimName: song-claim-test
+            

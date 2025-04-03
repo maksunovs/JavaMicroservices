@@ -19,3 +19,11 @@ spring:
 song:
   service:
     url: http://localhost:8180
+
+eureka:
+  client:
+    enabled: false
+
+api:
+  gateway:
+    url: http://localhost:8180

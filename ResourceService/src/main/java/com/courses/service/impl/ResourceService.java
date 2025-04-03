@@ -23,7 +23,7 @@ import java.util.List;
 
 @Service
 public class ResourceService implements IResourceService {
-    private static final String AUDIO_CONTENT_TYPE = "audio/mpeg";
+    public static final String AUDIO_CONTENT_TYPE = "audio/mpeg";
     @Autowired
     private IResourceRepository resourceRepository;
     @Autowired

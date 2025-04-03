@@ -25,9 +25,17 @@ spring:
     password: ${RESOURCES_DB_PWD}
     username: ${RESOURCES_DB_USR}
     url: ${RESOURCES_DB_URL}
+  servlet:
+    multipart:
+      max-request-size: 32MB
+      max-file-size: 32MB
 
 eureka:
   client:
     enabled: ${EUREKA_CLIENT_ENABLED:false}
     serviceUrl:
       defaultZone: ${SERVICE_REGISTRY_URL}
+      
+multipart:
+  maxFileSize: 20MB
+  maxRequestFile: 20MB  

@@ -19,3 +19,7 @@ spring:
 resource:
   service:
     url: http://localhost:8181
+    
+api:
+  gateway:
+    url: http://localhost:8181
