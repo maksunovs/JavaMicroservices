@@ -56,3 +56,6 @@ kubectl scale --replicas=5 rc/example1 rc/example2 rc/example3
 # Scale stateful set named 'web' to 3
 kubectl scale --replicas=3 statefulset/web
 Options
+
+# open port
+kubectl port-forward pod-name 5433:5432
