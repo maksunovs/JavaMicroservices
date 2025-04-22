@@ -1,14 +1,56 @@
 apiVersion: v1
+kind: Secret
+metadata:
+  name: song-secret
+type: kubernetes.io/basic-auth
+stringData:
+  username: user
+  password: password
+
+---
+
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: song-db-config-map
   namespace: k8s-program
 data:
   POSTGRES_DB: "songs_db"
-  POSTGRES_USER: "user"
-  POSTGRES_PASSWORD: "password"
   PGDATA: "/var/lib/postgresql/data/pgdata"
 
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: song-db-init-config-map
+  namespace: k8s-program
+data:
+  schema.sql: "CREATE TABLE IF NOT EXISTS public.song (
+	\"year\" int4 NOT NULL,
+  id int8 NOT NULL,
+  resource_id int8 NULL,
+  album varchar(255) NULL,
+  artist varchar(255) NULL,
+  length varchar(255) NULL,
+  \"name\" varchar(255) NULL,
+  CONSTRAINT song_pkey PRIMARY KEY (id)
+  );
+  
+  CREATE UNIQUE INDEX IF NOT EXISTS song_pkey ON public.song USING btree (id);
+  
+  -- public.song_seq definition
+  
+  -- DROP SEQUENCE public.song_seq;
+  
+  CREATE SEQUENCE IF NOT EXISTS public.song_seq
+  INCREMENT BY 50
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1
+  NO CYCLE;"
+  
 ---
 
 apiVersion: v1
@@ -50,12 +92,30 @@ spec:
           envFrom:
             - configMapRef:
                 name: song-db-config-map
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: song-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: song-secret
+                  key: password
           ports:
             - containerPort: 5432
               name: web
           volumeMounts:
             - name: www-persistent-storage
               mountPath: /var/lib/postgresql/data/pgdata
+            - name: song-db-init
+              mountPath: "/docker-entrypoint-initdb.d"
+              readOnly: true
+      volumes:
+        - name: song-db-init
+          configMap:
+            name: song-db-init-config-map
   volumeClaimTemplates:
     - metadata:
         name: www-persistent-storage
