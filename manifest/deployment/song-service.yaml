@@ -1,4 +1,19 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: song-service-config-map
+  namespace: k8s-program
+data:
+  SERVER_PORT: "8180"
+  API_GATEWAY_URL: "http://${RESOURCE-SERVICE_SERVICE_HOST}:${RESOURCE-SERVICE_SERVICE_PORT}"
+  SERVICE_REGISTRY_URL: "http://service-registry:8083/eureka"
+  SONGS_DB_URL: "jdbc:postgresql://${SONG-DB_SERVICE_HOST}:5432/songs_db"
+  SONGS_DB_USR: "user"
+  SONGS_DB_PWD: "password"
+  
+---
+
+apiVersion: v1
 kind: Service
 metadata:
   namespace: k8s-program
@@ -39,19 +54,9 @@ spec:
       containers:
         - name: song-service-pod
           image: song-service:latest
-          env:
-            - name: SERVER_PORT
-              value: "8180"
-            - name: API_GATEWAY_URL
-              value: "http://${RESOURCE-SERVICE_SERVICE_HOST}:${RESOURCE-SERVICE_SERVICE_PORT}"
-            - name: SERVICE_REGISTRY_URL
-              value: "http://service-registry:8083/eureka"
-            - name: SONGS_DB_URL
-              value: "jdbc:postgresql://${SONG-DB_SERVICE_HOST}:5432/songs_db"
-            - name: SONGS_DB_USR
-              value: "user"
-            - name: SONGS_DB_PWD
-              value: "password"
+          envFrom:
+            - configMapRef:
+                name: song-service-config-map
           ports:
             - containerPort: 8180
           imagePullPolicy: IfNotPresent

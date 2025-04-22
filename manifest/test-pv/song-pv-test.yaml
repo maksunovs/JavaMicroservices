@@ -13,6 +13,7 @@ spec:
   hostPath:
 #    path: "/mnt/d/Programming/projects/testVolume"
     path: "/mnt/c/k8s-program/test"
+    
 ---
 
 apiVersion: v1

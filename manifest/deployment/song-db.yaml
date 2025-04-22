@@ -1,4 +1,17 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: song-db-config-map
+  namespace: k8s-program
+data:
+  POSTGRES_DB: "songs_db"
+  POSTGRES_USER: "user"
+  POSTGRES_PASSWORD: "password"
+  PGDATA: "/var/lib/postgresql/data/pgdata"
+
+---
+
+apiVersion: v1
 kind: Service
 metadata:
   namespace: k8s-program
@@ -34,15 +47,9 @@ spec:
       containers:
         - name: song-db
           image: postgres:13.3-alpine
-          env:
-            - name: POSTGRES_DB
-              value: "songs_db"
-            - name: POSTGRES_USER
-              value: "user"
-            - name: POSTGRES_PASSWORD
-              value: "password"
-            - name: PGDATA
-              value: "/var/lib/postgresql/data/pgdata"
+          envFrom:
+            - configMapRef:
+                name: song-db-config-map
           ports:
             - containerPort: 5432
               name: web
