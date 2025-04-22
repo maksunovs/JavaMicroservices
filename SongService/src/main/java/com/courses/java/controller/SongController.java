@@ -43,6 +43,7 @@ public class SongController {
     public List<SongDto> getByResourceId(@RequestParam(name = "resourceId", required = false) Long resourceId) {
         return resourceId == null ? songService.findAll().stream().map(a -> (songMapper.entityToDto(a))).toList() : songService.findByResourceId(resourceId).stream().map(songMapper::entityToDto).toList();
     }
+    
     @GetMapping("/{id}")
     public SongDto getById(@PathVariable @Min(0L) @Max(Long.MAX_VALUE) Long id) {
         return songMapper.entityToDto(songService.findById(id));

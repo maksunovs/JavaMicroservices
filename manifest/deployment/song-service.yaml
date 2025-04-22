@@ -54,6 +54,10 @@ spec:
       containers:
         - name: song-service-pod
           image: song-service:latest
+#          args:
+#            - /bin/sh
+#            - -c
+#            - touch /home/health
           envFrom:
             - configMapRef:
                 name: song-service-config-map
@@ -63,6 +67,25 @@ spec:
           volumeMounts:
             - name: www-persistent-storage
               mountPath: /home
+          livenessProbe:
+            exec:
+              command:
+                - cat
+                - /home/health
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8180
+            initialDelaySeconds: 3
+            periodSeconds: 3
+          startupProbe:
+            httpGet:
+              path: /started
+              port: 8180
+            initialDelaySeconds: 3
+            periodSeconds: 3
       volumes:
         - name: www-persistent-storage
           persistentVolumeClaim:
