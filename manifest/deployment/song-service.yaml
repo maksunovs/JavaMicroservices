@@ -8,8 +8,6 @@ data:
   API_GATEWAY_URL: "http://${RESOURCE-SERVICE_SERVICE_HOST}:${RESOURCE-SERVICE_SERVICE_PORT}"
   SERVICE_REGISTRY_URL: "http://service-registry:8083/eureka"
   SONGS_DB_URL: "jdbc:postgresql://${SONG-DB_SERVICE_HOST}:5432/songs_db"
-  SONGS_DB_USR: "user"
-  SONGS_DB_PWD: "password"
   
 ---
 
@@ -53,7 +51,7 @@ spec:
     spec:
       containers:
         - name: song-service-pod
-          image: song-service:latest
+          image: song-service:0.2
 #          args:
 #            - /bin/sh
 #            - -c
@@ -61,6 +59,17 @@ spec:
           envFrom:
             - configMapRef:
                 name: song-service-config-map
+          env:
+            - name: SONGS_DB_USR
+              valueFrom:
+                secretKeyRef:
+                  name: song-secret
+                  key: username
+            - name: SONGS_DB_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: song-secret
+                  key: password
           ports:
             - containerPort: 8180
           imagePullPolicy: IfNotPresent

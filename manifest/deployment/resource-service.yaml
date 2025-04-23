@@ -8,8 +8,6 @@ data:
   API_GATEWAY_URL: "http://${SONG-SERVICE_SERVICE_HOST}:${SONG-SERVICE_SERVICE_PORT}"
   SERVICE_REGISTRY_URL: "http://service-registry:8083/eureka"
   RESOURCES_DB_URL: "jdbc:postgresql://${RESOURCE-DB_SERVICE_HOST}:5432/resources_db"
-  RESOURCES_DB_USR: "user"
-  RESOURCES_DB_PWD: "password"
   
 ---
 
@@ -57,6 +55,17 @@ spec:
           envFrom:
             - configMapRef:
                 name: resource-service-config-map
+          env:
+            - name: RESOURCES_DB_USR
+              valueFrom:
+                secretKeyRef:
+                  name: resource-secret
+                  key: username
+            - name: RESOURCES_DB_PWD
+              valueFrom:
+                secretKeyRef:
+                  name: resource-secret
+                  key: password
           ports:
             - containerPort: 8180
           imagePullPolicy: IfNotPresent
