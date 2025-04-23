@@ -51,7 +51,7 @@ spec:
     spec:
       containers:
         - name: song-service-pod
-          image: song-service:0.1
+          image: song-service:0.2
 #          args:
 #            - /bin/sh
 #            - -c

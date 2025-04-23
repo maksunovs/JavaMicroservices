@@ -49,7 +49,11 @@ data:
   MAXVALUE 9223372036854775807
   START 1
   CACHE 1
-  NO CYCLE;"
+  NO CYCLE;
+  
+  ALTER TABLE public.song
+  ADD genre VARCHAR(255);"
+
   
 ---
 
