@@ -33,5 +33,7 @@ public class SongDto {
     @Min(0)
     @Max(9999)
     private int year;
+    
+    private String genre;
 
 }

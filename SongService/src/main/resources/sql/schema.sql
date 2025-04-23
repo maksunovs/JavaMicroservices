@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS public.song (
 	artist varchar(255) NULL,
 	length varchar(255) NULL,
 	"name" varchar(255) NULL,
+	genre varchar(255) NULL,
 	CONSTRAINT song_pkey PRIMARY KEY (id)
 );
 
