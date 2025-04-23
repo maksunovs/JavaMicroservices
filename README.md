@@ -67,3 +67,6 @@ kubectl rollout history deployment/nginx-deployment
 kubectl rollout undo deployment/nginx-deployment --to-revision=2
 
 kubectl rollout undo deployment/nginx-deployment
+
+# update image 
+kubectl set image deployment/song-service-deployment song-service-pod=song-service:0.1  
