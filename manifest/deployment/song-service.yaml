@@ -93,7 +93,7 @@ spec:
             httpGet:
               path: /started
               port: 8180
-            initialDelaySeconds: 3
+            initialDelaySeconds: 10
             periodSeconds: 3
       volumes:
         - name: www-persistent-storage
