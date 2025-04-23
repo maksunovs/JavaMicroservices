@@ -22,6 +22,7 @@ public class SongMapper implements ISongMapper {
         song.setArtist(songDto.getArtist());
         song.setResourceId(songDto.getResourceId());
         song.setYear(songDto.getYear());
+        song.setGenre(songDto.getGenre());
         return song;
     }
 
@@ -34,6 +35,7 @@ public class SongMapper implements ISongMapper {
         songDto.setLength(song.getLength());
         songDto.setResourceId(song.getResourceId());
         songDto.setYear(song.getYear());
+        songDto.setGenre(song.getGenre());
         return songDto;
     }
 }

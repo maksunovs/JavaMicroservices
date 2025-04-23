@@ -59,3 +59,11 @@ Options
 
 # open port
 kubectl port-forward pod-name 5433:5432
+
+# rollout history
+kubectl rollout history deployment/nginx-deployment
+
+# revert rollout 
+kubectl rollout undo deployment/nginx-deployment --to-revision=2
+
+kubectl rollout undo deployment/nginx-deployment
