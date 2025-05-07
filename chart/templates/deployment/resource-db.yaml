@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
   name: {{.Release.Name}}-resource-secret
 type: kubernetes.io/basic-auth
 stringData:
@@ -14,7 +14,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{.Release.Name}}-resource-db-config-map
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
+  {{- template "mychart.labels" }}
 data:
   POSTGRES_DB: "resources_db"
   PGDATA: "/var/lib/postgresql/data/pgdata"
@@ -25,7 +26,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{.Release.Name}}-resource-db-init-config-map
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
 data:
   schema.sql: "CREATE TABLE IF NOT EXISTS public.resource (
 	id serial8 NOT NULL,
@@ -48,7 +49,7 @@ CREATE SEQUENCE IF NOT EXISTS  public.resource_seq
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
   name: {{.Release.Name}}-resource-db
   labels:
     app: {{.Release.Name}}-resource-db
@@ -65,7 +66,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
   name: {{.Release.Name}}-resource-db
 spec:
   selector:
@@ -80,7 +81,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: {{.Release.Name}}-resource-db
-          image: postgres:13.3-alpine
+          image: {{ .Values.images.postgres }}
           envFrom:
             - configMapRef:
                 name: {{.Release.Name}}-resource-db-config-map

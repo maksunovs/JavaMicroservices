@@ -1,0 +1,7 @@
+images:
+  postgres: postgres:13.3-alpine
+  resourceService: resource-service:0.1
+  songService: song-service:0.2
+replicas:
+  resourceService: 2
+  songService: 2

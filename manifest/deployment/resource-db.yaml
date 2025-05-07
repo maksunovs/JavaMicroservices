@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
+  namespace: k8s-program
   name: resource-secret
 type: kubernetes.io/basic-auth
 stringData:

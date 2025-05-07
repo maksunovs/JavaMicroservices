@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
   name: {{.Release.Name}}-song-secret
 type: kubernetes.io/basic-auth
 stringData:
@@ -14,7 +14,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{.Release.Name}}-song-db-config-map
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
+  {{- template "mychart.labels" }}
 data:
   POSTGRES_DB: "songs_db"
   PGDATA: "/var/lib/postgresql/data/pgdata"
@@ -25,7 +26,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{.Release.Name}}-song-db-init-config-map
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
 data:
   schema.sql: "CREATE TABLE IF NOT EXISTS public.song (
 	\"year\" int4 NOT NULL,
@@ -61,7 +62,7 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
   name: {{.Release.Name}}-song-db
   labels:
     app: {{.Release.Name}}-song-db
@@ -78,7 +79,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
   name: {{.Release.Name}}-song-db
 spec:
   selector:
@@ -93,7 +94,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
         - name: {{.Release.Name}}-song-db
-          image: postgres:13.3-alpine
+          image: {{ .Values.images.postgres }}
           envFrom:
             - configMapRef:
                 name: {{.Release.Name}}-song-db-config-map

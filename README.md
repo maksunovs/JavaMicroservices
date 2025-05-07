@@ -86,3 +86,8 @@ helm uninstall full-coral
 helm list --all --all-namespaces
 
 https://jiminbyun.medium.com/how-to-manage-environment-variables-in-helm-charts-a-comprehensive-guide-eac379703099
+
+# override values
+helm install stable/drupal --set image=my-registry/drupal:0.1.0 --set livenessProbe.exec.command=[cat,docroot/CHANGELOG.txt]
+
+helm install mychart .\chart\ -n k8s-program --set replicas.songService=4

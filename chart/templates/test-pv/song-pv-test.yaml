@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
   name: {{.Release.Name}}-song-pv-test
 spec:
   capacity:
@@ -12,14 +12,14 @@ spec:
   storageClassName: local-storage
   hostPath:
 #    path: "/mnt/d/Programming/projects/testVolume"
-    path: "/mnt/c/k8s-program/test"
+    path: "/mnt/c/{{.Release.Namespace}}/test"
     
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  namespace: k8s-program
+  namespace: {{.Release.Namespace}}
   name: {{.Release.Name}}-song-claim-test
 spec:
   accessModes:
