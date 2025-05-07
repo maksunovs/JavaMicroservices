@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: resource-secret
+type: kubernetes.io/basic-auth
+stringData:
+  username: user
+  password: password
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: resource-db-config-map
+  namespace: k8s-program
+data:
+  POSTGRES_DB: "resources_db"
+  PGDATA: "/var/lib/postgresql/data/pgdata"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: resource-db-init-config-map
+  namespace: k8s-program
+data:
+  schema.sql: "CREATE TABLE IF NOT EXISTS public.resource (
+	id serial8 NOT NULL,
+	audio_bytes bytea NOT NULL,
+	CONSTRAINT resource_pkey PRIMARY KEY (id)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS resource_pkey ON public.resource USING btree (id);
+
+
+CREATE SEQUENCE IF NOT EXISTS  public.resource_seq
+	INCREMENT BY 50
+	MINVALUE 1
+	MAXVALUE 9223372036854775807
+	START 1
+	CACHE 1
+	NO CYCLE;}"
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: k8s-program
+  name: resource-db
+  labels:
+    app: resource-db
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      name: web
+  selector:
+    app: resource-db
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: k8s-program
+  name: resource-db
+spec:
+  selector:
+    matchLabels:
+      app: resource-db # has to match .spec.template.metadata.labels
+  serviceName: "resource-db"
+  template:
+    metadata:
+      labels:
+        app: resource-db # has to match .spec.selector.matchLabels
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: resource-db
+          image: postgres:13.3-alpine
+          envFrom:
+            - configMapRef:
+                name: resource-db-config-map
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: resource-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: resource-secret
+                  key: password
+          ports:
+            - containerPort: 5432
+              name: web
+          volumeMounts:
+            - name: www-persistent-storage
+              mountPath: /var/lib/postgresql/data/pgdata
+            - name: resource-db-init
+              mountPath: "/docker-entrypoint-initdb.d"
+              readOnly: true
+      volumes:
+        - name: resource-db-init
+          configMap:
+            name: resource-db-init-config-map
+  volumeClaimTemplates:
+    - metadata:
+        name: www-persistent-storage
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "local-path"
+        resources:
+          requests:
+            storage: 1Gi

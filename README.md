@@ -61,12 +61,16 @@ Options
 kubectl port-forward pod-name 5433:5432
 
 # rollout history
-kubectl rollout history deployment/nginx-deployment
+kubectl rollout history deployment/song-service-deployment
+
 
 # revert rollout 
-kubectl rollout undo deployment/nginx-deployment --to-revision=2
+kubectl rollout undo deployment/song-service-deployment --to-revision=2kubectl rollout undo deployment/song-service-deployment
 
-kubectl rollout undo deployment/nginx-deployment
+kubectl rollout undo deployment/song-service-deployment
 
 # update image 
 kubectl set image deployment/song-service-deployment song-service-pod=song-service:0.1  
+
+# install manifest files
+helm install full-coral ./mychart
