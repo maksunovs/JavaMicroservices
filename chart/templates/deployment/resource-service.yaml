@@ -1,25 +1,25 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: resource-service-config-map
+  name: {{.Release.Name}}-resource-service-config-map
   namespace: k8s-program
 data:
   SERVER_PORT: "8180"
-  API_GATEWAY_URL: "http://${SONG-SERVICE_SERVICE_HOST}:${SONG-SERVICE_SERVICE_PORT}"
+  API_GATEWAY_URL: {{ .Release.Name | upper | printf "http://${%s-SONG-SERVICE_SERVICE_HOST}" }}:{{ .Release.Name | upper | printf "${%s-SONG-SERVICE_SERVICE_PORT}" }}
   SERVICE_REGISTRY_URL: "http://service-registry:8083/eureka"
-  RESOURCES_DB_URL: "jdbc:postgresql://${RESOURCE-DB_SERVICE_HOST}:5432/resources_db"
-  
+  RESOURCES_DB_URL: {{ .Release.Name | upper | printf "jdbc:postgresql://${%s-RESOURCE-DB_SERVICE_HOST}:5432/resources_db" }}
+
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
   namespace: k8s-program
-  name: resource-service
+  name: {{.Release.Name}}-resource-service
 spec:
   type: NodePort
   selector:
-    app: resource-service-pod
+    app: {{.Release.Name}}-resource-service-pod
   ports:
     - port: 8180
       # By default and for convenience, the `targetPort` is set to
@@ -36,35 +36,35 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: k8s-program
-  name: resource-service-deployment
+  name: {{.Release.Name}}-resource-service-deployment
   labels:
-    app: resource-service-app
+    app: {{.Release.Name}}-resource-service-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: resource-service-pod
+      app: {{.Release.Name}}-resource-service-pod
   template:
     metadata:
       labels:
-        app: resource-service-pod
+        app: {{.Release.Name}}-resource-service-pod
     spec:
       containers:
-        - name: resource-service-pod
+        - name: {{.Release.Name}}-resource-service-pod
           image: resource-service:0.1
           envFrom:
             - configMapRef:
-                name: resource-service-config-map
+                name: {{.Release.Name}}-resource-service-config-map
           env:
             - name: RESOURCES_DB_USR
               valueFrom:
                 secretKeyRef:
-                  name: resource-secret
+                  name: {{.Release.Name}}-resource-secret
                   key: username
             - name: RESOURCES_DB_PWD
               valueFrom:
                 secretKeyRef:
-                  name: resource-secret
+                  name: {{.Release.Name}}-resource-secret
                   key: password
           ports:
             - containerPort: 8180
@@ -85,6 +85,6 @@ spec:
             httpGet:
               path: /started
               port: 8180
-            initialDelaySeconds: 10
-            periodSeconds: 3
+            initialDelaySeconds: 20
+            periodSeconds: 10
               

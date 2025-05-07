@@ -73,4 +73,16 @@ kubectl rollout undo deployment/song-service-deployment
 kubectl set image deployment/song-service-deployment song-service-pod=song-service:0.1  
 
 # install manifest files
-helm install full-coral ./mychart
+helm install full-coral ./chart
+
+# get generated manifest
+helm get manifest full-coral
+
+# uninstall chart
+helm uninstall full-coral
+
+
+# get charts
+helm list --all --all-namespaces
+
+https://jiminbyun.medium.com/how-to-manage-environment-variables-in-helm-charts-a-comprehensive-guide-eac379703099

@@ -1,7 +1,8 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: song-secret
+  namespace: k8s-program
+  name: {{.Release.Name}}-song-secret
 type: kubernetes.io/basic-auth
 stringData:
   username: user
@@ -12,7 +13,7 @@ stringData:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: song-db-config-map
+  name: {{.Release.Name}}-song-db-config-map
   namespace: k8s-program
 data:
   POSTGRES_DB: "songs_db"
@@ -23,7 +24,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: song-db-init-config-map
+  name: {{.Release.Name}}-song-db-init-config-map
   namespace: k8s-program
 data:
   schema.sql: "CREATE TABLE IF NOT EXISTS public.song (
@@ -61,16 +62,16 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: k8s-program
-  name: song-db
+  name: {{.Release.Name}}-song-db
   labels:
-    app: song-db
+    app: {{.Release.Name}}-song-db
 spec:
   type: ClusterIP
   ports:
     - port: 5432
       name: web
   selector:
-    app: song-db
+    app: {{.Release.Name}}-song-db
 
 ---
 
@@ -78,51 +79,51 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   namespace: k8s-program
-  name: song-db
+  name: {{.Release.Name}}-song-db
 spec:
   selector:
     matchLabels:
-      app: song-db # has to match .spec.template.metadata.labels
-  serviceName: "song-db"
+      app: {{.Release.Name}}-song-db # has to match .spec.template.metadata.labels
+  serviceName: "{{.Release.Name}}-song-db"
   template:
     metadata:
       labels:
-        app: song-db # has to match .spec.selector.matchLabels
+        app: {{.Release.Name}}-song-db # has to match .spec.selector.matchLabels
     spec:
       terminationGracePeriodSeconds: 10
       containers:
-        - name: song-db
+        - name: {{.Release.Name}}-song-db
           image: postgres:13.3-alpine
           envFrom:
             - configMapRef:
-                name: song-db-config-map
+                name: {{.Release.Name}}-song-db-config-map
           env:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: song-secret
+                  name: {{.Release.Name}}-song-secret
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: song-secret
+                  name: {{.Release.Name}}-song-secret
                   key: password
           ports:
             - containerPort: 5432
               name: web
           volumeMounts:
-            - name: www-persistent-storage
+            - name: {{.Release.Name}}-www-persistent-storage
               mountPath: /var/lib/postgresql/data/pgdata
-            - name: song-db-init
+            - name: {{.Release.Name}}-song-db-init
               mountPath: "/docker-entrypoint-initdb.d"
               readOnly: true
       volumes:
-        - name: song-db-init
+        - name: {{.Release.Name}}-song-db-init
           configMap:
-            name: song-db-init-config-map
+            name: {{.Release.Name}}-song-db-init-config-map
   volumeClaimTemplates:
     - metadata:
-        name: www-persistent-storage
+        name: {{.Release.Name}}-www-persistent-storage
       spec:
         accessModes: [ "ReadWriteOnce" ]
         storageClassName: "local-path"

@@ -1,7 +1,8 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: resource-secret
+  namespace: k8s-program
+  name: {{.Release.Name}}-resource-secret
 type: kubernetes.io/basic-auth
 stringData:
   username: user
@@ -12,7 +13,7 @@ stringData:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: resource-db-config-map
+  name: {{.Release.Name}}-resource-db-config-map
   namespace: k8s-program
 data:
   POSTGRES_DB: "resources_db"
@@ -23,7 +24,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: resource-db-init-config-map
+  name: {{.Release.Name}}-resource-db-init-config-map
   namespace: k8s-program
 data:
   schema.sql: "CREATE TABLE IF NOT EXISTS public.resource (
@@ -48,16 +49,16 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: k8s-program
-  name: resource-db
+  name: {{.Release.Name}}-resource-db
   labels:
-    app: resource-db
+    app: {{.Release.Name}}-resource-db
 spec:
   type: ClusterIP
   ports:
     - port: 5432
       name: web
   selector:
-    app: resource-db
+    app: {{.Release.Name}}-resource-db
 
 ---
 
@@ -65,51 +66,51 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   namespace: k8s-program
-  name: resource-db
+  name: {{.Release.Name}}-resource-db
 spec:
   selector:
     matchLabels:
-      app: resource-db # has to match .spec.template.metadata.labels
+      app: {{.Release.Name}}-resource-db # has to match .spec.template.metadata.labels
   serviceName: "resource-db"
   template:
     metadata:
       labels:
-        app: resource-db # has to match .spec.selector.matchLabels
+        app: {{.Release.Name}}-resource-db # has to match .spec.selector.matchLabels
     spec:
       terminationGracePeriodSeconds: 10
       containers:
-        - name: resource-db
+        - name: {{.Release.Name}}-resource-db
           image: postgres:13.3-alpine
           envFrom:
             - configMapRef:
-                name: resource-db-config-map
+                name: {{.Release.Name}}-resource-db-config-map
           env:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: resource-secret
+                  name: {{.Release.Name}}-resource-secret
                   key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: resource-secret
+                  name: {{.Release.Name}}-resource-secret
                   key: password
           ports:
             - containerPort: 5432
               name: web
           volumeMounts:
-            - name: www-persistent-storage
+            - name: {{.Release.Name}}-www-persistent-storage
               mountPath: /var/lib/postgresql/data/pgdata
-            - name: resource-db-init
+            - name: {{.Release.Name}}-resource-db-init
               mountPath: "/docker-entrypoint-initdb.d"
               readOnly: true
       volumes:
-        - name: resource-db-init
+        - name: {{.Release.Name}}-resource-db-init
           configMap:
-            name: resource-db-init-config-map
+            name: {{.Release.Name}}-resource-db-init-config-map
   volumeClaimTemplates:
     - metadata:
-        name: www-persistent-storage
+        name: {{.Release.Name}}-www-persistent-storage
       spec:
         accessModes: [ "ReadWriteOnce" ]
         storageClassName: "local-path"
