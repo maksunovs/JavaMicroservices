@@ -17,18 +17,11 @@ metadata:
   namespace: {{.Release.Namespace}}
   name: {{.Release.Name}}-resource-service
 spec:
-  type: NodePort
+  type:  ClusterIP
   selector:
     app: {{.Release.Name}}-resource-service-pod
   ports:
     - port: 8180
-      # By default and for convenience, the `targetPort` is set to
-      # the same value as the `port` field.
-      targetPort: 8180
-      # Optional field
-      # By default and for convenience, the Kubernetes control plane
-      # will allocate a port from a range (default: 30000-32767)
-      nodePort: 30002
 
 ---
 

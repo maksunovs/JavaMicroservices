@@ -91,3 +91,10 @@ https://jiminbyun.medium.com/how-to-manage-environment-variables-in-helm-charts-
 helm install stable/drupal --set image=my-registry/drupal:0.1.0 --set livenessProbe.exec.command=[cat,docroot/CHANGELOG.txt]
 
 helm install mychart .\chart\ -n k8s-program --set replicas.songService=4
+
+
+# install ingress nginx controller
+helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace
+
+
+helm install my-ingress ingress-nginx/ingress-nginx --namespace ingress --set controller.replicaCount=2
