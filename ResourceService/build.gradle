@@ -5,19 +5,18 @@ plugins {
 }
 
 ext {
-    group = 'com.courses'
     set('springCloudVersion', "2023.0.0")
-    name = 'Eureka Client'
-    description = 'Eureka Client demo project'
-    version = '0.0.1-SNAPSHOT'
-    sourceEncoding = 'UTF-8'
 }
 
+group = "com.courses"
+version = "0.1"
+
 java {
-    sourceCompatibility = '17'
+    sourceCompatibility = JavaVersion.VERSION_21
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -70,4 +69,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    enabled = false
 }

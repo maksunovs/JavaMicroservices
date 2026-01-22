@@ -1,20 +1,8 @@
 # syntax=docker/dockerfile:1
 
-FROM gradle:8.5-jdk17-alpine as build-app
+FROM eclipse-temurin:21-jre-alpine
 
-WORKDIR /app
-
-COPY build.gradle ./
-COPY settings.gradle ./
-COPY src ./src
-
-RUN gradle build --no-daemon
-
-FROM eclipse-temurin:17-jre-alpine
-
-COPY --from=build-app /app/build/libs/SongService.jar /SongService.jar
-
-EXPOSE 8180
+COPY build/libs/SongService-*.jar /SongService.jar
 
 CMD ["java", "-jar","/SongService.jar"]
 

@@ -11,7 +11,7 @@ services:
   resources_db:
     image: 'postgres:13.3-alpine'
     env_file:
-      - resource_db.env
+      - env/resource_db.env
     volumes:
       - 'resources_data:/var/lib/postgresql/data/pgdata'
     ports:
@@ -19,7 +19,7 @@ services:
   songs_db:
     image: 'postgres:13.3-alpine'
     env_file:
-      - song_db.env
+      - env/song_db.env
     volumes:
       - 'songs_data:/var/lib/postgresql/data/pgdata'
     ports:
@@ -27,7 +27,7 @@ services:
   storages_db:
     image: 'postgres:13.3-alpine'
     env_file:
-      - storage_db.env
+      - env/storage_db.env
     volumes:
       - 'storages_data:/var/lib/postgresql/data/pgdata'
     ports:
@@ -39,7 +39,7 @@ services:
     ports:
       - '8083:8083'
     env_file:
-      - service_registry.env
+      - env/service_registry.env
   api-gateway:
     build:
       context: ./ServiceDiscoveryTask
@@ -47,14 +47,14 @@ services:
     ports:
       - '8080:8080'
     env_file:
-      - api_gateway.env
+      - env/api_gateway.env
   resources-service:
     build: ./ResourceService
     ports:
       - '8181:8181'
       - '8000:8000'
     env_file:
-      - resources_service.env
+      - env/resources_service.env
     depends_on:
       - resources_db
   songs-service:
@@ -63,13 +63,13 @@ services:
       mode: replicated
       replicas: 2
     env_file:
-      - songs_service.env
+      - env/songs_service.env
     depends_on:
       - songs_db
   storages-service:
     build: ./StorageService
     env_file:
-      - storages_service.env
+      - env/storages_service.env
     depends_on:
       - storages_db
   minio-service:
@@ -88,44 +88,39 @@ services:
   resources-processor:
     build: ./ResourceProcessor
     env_file:
-      - resources_processor.env
-  zookeeper-service:
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - 22181:2181
-      
+      - env/resources_processor.env
   kafka-service:
-    image: confluentinc/cp-kafka:latest
-    depends_on:
-      - zookeeper-service
+    image: confluentinc/cp-kafka:7.8.0
+    hostname: kafka-service
+    container_name: kafka-service
     ports:
-      - 29093:29092
+      - "29092:29092"
+      - "29093:29093"
     environment:
+      KAFKA_NODE_ID: 1
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper-service:2181
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka-service:29092, OUTSIDE://localhost:29093
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-service:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://kafka-service:29092,CONTROLLER://kafka-service:29093'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-service:29092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      CLUSTER_ID: 'EmptNWtoR4GGWx-BH6nGLQ'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_MIN_INSYNC_REPLICAS: 2
   kafka-ui-service:
-    image: provectuslabs/kafka-ui
-    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui-service
     ports:
-      - 8090:8080
-    restart: always
+      - "8090:8080"
     environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka-service:29092
-      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper-service:2181
-    links:
-      - kafka-service
-      - zookeeper-service
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-service:29092
     depends_on:
       - kafka-service
-      - zookeeper-service
   prometheus:
     image: prom/prometheus
     volumes:
@@ -137,8 +132,8 @@ services:
     build: './monitoring/grafana'
     ports:
       - "3000:3000"
-    volumes:
-      - ./grafana:/var/lib/grafana
+#    volumes:
+#      - ./grafana:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin

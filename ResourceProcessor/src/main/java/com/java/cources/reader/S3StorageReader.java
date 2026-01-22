@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import java.io.InputStream;
 
 public class S3StorageReader {
+    
     private final MinioClient minioClient;
 
     public S3StorageReader(String endpointUrl, String user, String password) {

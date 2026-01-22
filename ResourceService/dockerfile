@@ -1,21 +1,8 @@
 # syntax=docker/dockerfile:1
 
-FROM gradle:8.5-jdk17-alpine as build-app
+FROM eclipse-temurin:21-jre-alpine
 
-WORKDIR /app
+COPY build/libs/ResourceService-*.jar /ResourceService.jar
 
-COPY build.gradle ./
-COPY settings.gradle ./
-COPY src ./src
-
-RUN gradle build --no-daemon
-
-FROM eclipse-temurin:17-jre-alpine
-
-COPY --from=build-app /app/build/libs/ResourceService.jar /ResourceService.jar
-
-EXPOSE 8181
-EXPOSE 8000
-
-CMD ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000","-jar","/ResourceService.jar"]
+CMD ["java", "-jar","/ResourceService.jar"]
 
